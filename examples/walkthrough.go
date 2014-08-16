@@ -130,10 +130,56 @@ func main() {
 			return
 		}
 		fmt.Printf("jobStatus:%s\n", status)
-		if status != "queued" && status != "running" {
+		if status != "queued" {
 			break
 		}
 		time.Sleep(1000000000)
+	}
+	{
+		jobDesc, err := client.ShowJob(jobId)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		fmt.Printf("query:%s\n", jobDesc.Query)
+		fmt.Printf("debug.cmdOut:%s\n", jobDesc.Debug.CmdOut)
+		fmt.Printf("debug.stdErr:%s\n", jobDesc.Debug.StdErr)
+		fmt.Printf("url:%s\n", jobDesc.Url)
+		fmt.Printf("startAt:%s\n", jobDesc.StartAt.String())
+		fmt.Printf("endAt:%s\n", jobDesc.EndAt.String())
+		fmt.Printf("cpuTime:%g\n", jobDesc.CpuTime)
+		fmt.Printf("resultSize:%d\n", jobDesc.ResultSize)
+		fmt.Printf("priority:%d\n", jobDesc.Priority)
+		fmt.Printf("hiveResultSchema:%v\n", jobDesc.HiveResultSchema)
+	}
+	for {
+		time.Sleep(1000000000)
+		status, err := client.JobStatus(jobId)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		fmt.Printf("jobStatus:%s\n", status)
+		if status != "queued" && status != "running" {
+			break
+		}
+	}
+	{
+		jobDesc, err := client.ShowJob(jobId)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		fmt.Printf("query:%s\n", jobDesc.Query)
+		fmt.Printf("debug.cmdOut:%s\n", jobDesc.Debug.CmdOut)
+		fmt.Printf("debug.stdErr:%s\n", jobDesc.Debug.StdErr)
+		fmt.Printf("url:%s\n", jobDesc.Url)
+		fmt.Printf("startAt:%s\n", jobDesc.StartAt.String())
+		fmt.Printf("endAt:%s\n", jobDesc.EndAt.String())
+		fmt.Printf("cpuTime:%g\n", jobDesc.CpuTime)
+		fmt.Printf("resultSize:%d\n", jobDesc.ResultSize)
+		fmt.Printf("priority:%d\n", jobDesc.Priority)
+		fmt.Printf("hiveResultSchema:%v\n", jobDesc.HiveResultSchema)
 	}
 	err = client.JobResultEach(jobId, func(v interface{}) error {
 		fmt.Printf("Result:%v\n", v)
