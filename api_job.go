@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strconv"
 	"net/url"
-	"encoding/json"
 )
 
 type ListJobsResultElement struct {
@@ -67,10 +66,14 @@ type ShowJobResult struct {
 	Id string
 	Type string
 	Database string
+	UserName string
 	Status string
 	Query string
 	Debug ShowJobResultDebugElement
 	Url string
+	Duration int
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	StartAt time.Time
 	EndAt time.Time
 	CpuTime float64
@@ -78,22 +81,33 @@ type ShowJobResult struct {
 	ResultUrl string
 	Priority int
 	RetryLimit int
-	HiveResultSchema map[string]interface{}
+	HiveResultSchema []interface{}
 }
 
 var showJobSchema = map[string]interface{} {
+	"job_id": "",
 	"type": Optional{"", "?"},
+	"organization": Optional{"", ""},
+	"user_name": "",
 	"database": "",
 	"status": "",
 	"query": "",
-	"start_at": time.Time{},
-	"end_at": time.Time{},
-	"cpu_time": Optional{"", ""},
+	"debug": map[string]interface{} {
+		"cmdout": Optional{"", ""},
+		"stderr": Optional{"", ""},
+	},
+	"url": "",
+	"duration": Optional{0, 0},
+	"created_at": time.Time{},
+	"updated_at": time.Time{},
+	"start_at": Optional{time.Time{}, time.Time{}},
+	"end_at": Optional{time.Time{}, time.Time{}},
+	"cpu_time": Optional{0., 0.},
 	"result_size": Optional{0, 0},
 	"result": "",
 	"priority": 0,
 	"retry_limit": 0,
-	"hive_result_schema": map[string]interface{}{},
+	"hive_result_schema": Optional{EmbeddedJSON([]interface{}{}), nil},
 }
 
 type Query struct {
@@ -137,7 +151,7 @@ func (client *TDClient) ListJobs() (*ListJobsResult, error) {
 			EndAt: v["end_at"].(time.Time),
 			CpuTime: v["cpu_time"].(float64),
 			ResultSize: v["result_size"].(int),
-			ResultUrl: v["result_url"].(string),
+			ResultUrl: v["result"].(string),
 			Priority: v["priority"].(int),
 			RetryLimit: v["retry_limit"].(int),
 		}
@@ -159,28 +173,26 @@ func (client *TDClient) ShowJob(jobId string) (*ShowJobResult, error) {
 		return nil, err
 	}
 	typeStr := js["type"].(string)
-	hiveResultSchema := (map[string]interface{})(nil)
-	hiveResultSchemaStr := js["hive_result_schema"].(string)
-	err = json.Unmarshal([]byte(hiveResultSchemaStr), &hiveResultSchemaStr)
-	if err != nil {
-		return nil, err
-	}
+	hiveResultSchema, _ := js["hive_result_schema"].([]interface{})
 	return &ShowJobResult {
 		Id: js["job_id"].(string),
 		Type: typeStr,
 		Database: js["database"].(string),
+		UserName: js["user_name"].(string),
 		Status: js["status"].(string),
 		Query: js["query"].(string),
 		Debug: ShowJobResultDebugElement {
-			CmdOut: js["debug"].(map[string]string)["cmdout"],
-			StdErr: js["debug"].(map[string]string)["stderr"],
+			CmdOut: js["debug"].(map[string]interface{})["cmdout"].(string),
+			StdErr: js["debug"].(map[string]interface{})["stderr"].(string),
 		},
 		Url: js["url"].(string),
+		CreatedAt: js["created_at"].(time.Time),
+		UpdatedAt: js["updated_at"].(time.Time),
 		StartAt: js["start_at"].(time.Time),
 		EndAt: js["end_at"].(time.Time),
 		CpuTime: js["cpu_time"].(float64),
 		ResultSize: js["result_size"].(int),
-		ResultUrl: js["result_url"].(string),
+		ResultUrl: js["result"].(string),
 		Priority: js["priority"].(int),
 		RetryLimit: js["retry_limit"].(int),
 		HiveResultSchema: hiveResultSchema,
