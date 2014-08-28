@@ -15,6 +15,8 @@ import (
 	"io/ioutil"
 	"reflect"
 	"crypto/md5"
+	"crypto/tls"
+	"crypto/x509"
 	"github.com/ugorji/go/codec"
 )
 
@@ -78,6 +80,7 @@ type Settings struct {
 	ReadTimeout time.Duration
 	SendTimeout time.Duration
 	Ssl bool
+	RootCAs *x509.CertPool
 	Port int
 	Proxy interface{}
 	Transport http.RoundTripper
@@ -115,6 +118,7 @@ type TDClient struct {
 	userAgent string
 	router EndpointRouter
 	ssl bool
+	rootCAs *x509.CertPool
 	port int
 	connectionTimeout time.Duration
 	readTimeout time.Duration
@@ -625,6 +629,9 @@ func NewTDClient(settings Settings) (*TDClient, error) {
 				settings.ReadTimeout,
 				settings.SendTimeout,
 			),
+			TLSClientConfig: &tls.Config {
+				RootCAs: settings.RootCAs,
+			},
 			ResponseHeaderTimeout: settings.ReadTimeout,
 			DisableCompression: false,
 		}
@@ -642,6 +649,7 @@ func NewTDClient(settings Settings) (*TDClient, error) {
 		userAgent: userAgent,
 		router: router,
 		ssl: settings.Ssl,
+		rootCAs: settings.RootCAs,
 		port: settings.Port,
 		connectionTimeout: settings.ConnectionTimeout,
 		readTimeout: settings.ReadTimeout,
