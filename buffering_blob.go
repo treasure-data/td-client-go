@@ -7,12 +7,15 @@ import (
 
 type BufferingBlob struct {
 	inner      Blob
+	size       int
 }
 
 type myReader struct {
 	*bufio.Reader
 	cl io.Closer
 }
+
+const defaultBufferSize = 4096
 
 func (r *myReader) Close() error {
 	return r.cl.Close()
@@ -23,7 +26,7 @@ func (blob *BufferingBlob) Reader() (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &myReader{ bufio.NewReader(rdr), rdr }, nil
+	return &myReader{ bufio.NewReaderSize(rdr, blob.size), rdr }, nil
 }
 
 func (blob *BufferingBlob) Size() (int64, error) {
@@ -35,5 +38,9 @@ func (blob *BufferingBlob) MD5Sum() ([]byte, error) {
 }
 
 func NewBufferingBlob(blob Blob) Blob {
-	return &BufferingBlob{ blob }
+	return NewBufferingBlobSize(blob, defaultBufferSize)
+}
+
+func NewBufferingBlobSize(blob Blob, size int) Blob {
+	return &BufferingBlob{ blob, size }
 }
