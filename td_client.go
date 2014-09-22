@@ -211,7 +211,7 @@ func (client *TDClient) newRequest(method string, requestUri string, params url.
 	}
 	err := (error)(nil)
 	contentLength:= int64(0)
-	reader := (io.Reader)(nil)
+	reader := (io.ReadCloser)(nil)
 	if body != nil {
 		contentLength, err = body.Size()
 		if err != nil {
@@ -229,6 +229,9 @@ func (client *TDClient) newRequest(method string, requestUri string, params url.
 		reader,
 	)
 	if err != nil {
+		if reader != nil {
+			reader.Close()
+		}
 		return nil, err
 	}
 	if body != nil {
