@@ -1,3 +1,21 @@
+//
+// Treasure Data API client for Go
+//
+// Copyright (C) 2014 Treasure Data, Inc.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//    http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 package td_client
 
 import (
@@ -9,6 +27,8 @@ import (
 	"encoding/json"
 )
 
+// ListDataBasesResultElement represents an item of the result of
+// ListDatabases API call
 type ListDataBasesResultElement struct {
 	Name string
 	Organization string
@@ -18,6 +38,7 @@ type ListDataBasesResultElement struct {
 	Permission string
 }
 
+// ListDataBasesResult is a collection of ListDataBasesResultElement
 type ListDataBasesResult []ListDataBasesResultElement
 
 var listDatabasesSchema = map[string]interface{} {
@@ -33,8 +54,10 @@ var listDatabasesSchema = map[string]interface{} {
 	},
 }
 
+// ListTablesResultElement represents an item of the result of ListTables API
+// call
 type ListTablesResultElement struct {
-	Id int 
+	Id int
 	Name string
 	Type string
 	Count int
@@ -49,6 +72,7 @@ type ListTablesResultElement struct {
 	PrimaryKeyType string
 }
 
+// ListTablesResult is a collection of ListTablesResultElement
 type ListTablesResult []ListTablesResultElement
 
 var listTablesSchema = map[string]interface{} {
@@ -283,4 +307,3 @@ func (client *TDClient) Tail(db string, table string, count int, to time.Time, f
 	}
 	return nil
 }
-

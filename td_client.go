@@ -1,3 +1,21 @@
+//
+// Treasure Data API client for Go
+//
+// Copyright (C) 2014 Treasure Data, Inc.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//    http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 package td_client
 
 import (
@@ -40,9 +58,12 @@ const (
 )
 
 const (
+	// Represents the date/time format for time.Time.Format(),
+	// which is used in several API function parameters and results.
 	TDAPIDateTime = "2006-01-02 15:04:05 MST"
 )
 
+// APIError represents an error that has occurred during the API call.
 type APIError struct {
 	Type int
 	Message string
@@ -68,25 +89,36 @@ func (e *APIError) Error() string {
 	return retval
 }
 
+// EndpointRouter is expected to return the host name most suitable for the passed request URI
 type EndpointRouter interface {
 	Route(requestUri string) string
 }
 
+// Settings stores the parameters for initializaing TDClient.
+//
+// Note that ReadTimeout / SendTimeout includes the time taken for receiving / sending the actual data in addition to the idle time, so it is advised to set the value long enough depending on the circumstances. (network latency etc.)
+//
+// Specifying 0 to Port means the value will be automatically determined according to the settings.
+//
+// Proxy can take three kinds of values: *url.URL (parsed URL), func(*http.Request)(*url.URL, error), string (URL) or nil (the direct connection to the endpoint is possible).
+//
+// Transport allows you to take more control over the communication.
 type Settings struct {
-	ApiKey string
-	UserAgent string
-	Router EndpointRouter
-	ConnectionTimeout time.Duration
-	ReadTimeout time.Duration
-	SendTimeout time.Duration
-	Ssl bool
-	RootCAs *x509.CertPool
-	Port int
-	Proxy interface{}
-	Transport http.RoundTripper
-	Headers map[string]string
+	ApiKey string                     // Treasure Data Account API key
+	UserAgent string                  // (Optional) Name that will appear as the User-Agent HTTP header
+	Router EndpointRouter             // (Optional) Endpoint router
+	ConnectionTimeout time.Duration   // (Optional) Connection timeout
+	ReadTimeout time.Duration         // (Optional) Read timeout.
+	SendTimeout time.Duration         // (Optional) Send timeout.
+	Ssl bool                          // (Optional) Whether to use the secure connection.
+	RootCAs *x509.CertPool            // (Optional) Specify the CA certificates.
+	Port int                          // (Optional) Port number.
+	Proxy interface{}                 // (Optional) HTTP proxy to use.
+	Transport http.RoundTripper       // (Optional) Overrides the transport used to establish the connection.
+	Headers map[string]string         // (Optional) Additional headers that will be sent to the endpoint.
 }
 
+// A FixedEndpointRouter instance represents an EndpointRouter that always routes the request to the same endpoint.
 type FixedEndpointRouter struct {
 	Endpoint string
 }
@@ -95,6 +127,7 @@ func (r *FixedEndpointRouter) Route(_ string) string {
 	return r.Endpoint
 }
 
+// V3EndpointRouter routes the import request to the dedicated endpoint and other requests to the default.
 type V3EndpointRouter struct {
 	DefaultEndpoint string
 	ImportEndpoint string
@@ -108,11 +141,13 @@ func (r *V3EndpointRouter) Route(requestUri string) string {
 	}
 }
 
+// DefaultRouter is a V3EndpointRouter with the hard-coded endpoints.
 var DefaultRouter = V3EndpointRouter {
 	DefaultEndpoint: NEW_DEFAULT_ENDPOINT,
 	ImportEndpoint: NEW_DEFAULT_IMPORT_ENDPOINT,
 }
 
+// TDClient represents a context used to talk to the Treasure Data API.
 type TDClient struct {
 	apiKey string
 	userAgent string
@@ -128,23 +163,26 @@ type TDClient struct {
 	mpCodec *codec.MsgpackHandle
 }
 
+// Blob denotes a concept, which is opaque data that can be read bytewise through an io.Reader, has a certain size and provides a calculated MD5 sum.
 type Blob interface {
 	Reader() (io.ReadCloser, error)
 	Size() (int64, error)
 	MD5Sum() ([]byte, error)
 }
 
+// Used in internal schema, marking the field as optional as well as providing the default.
 type Optional struct {
 	V interface{}
 	Default interface{}
 }
 
+// Used in internal schema, marking the field so that it will be unmarshaled by the specified function.
 type ConverterFunc func(string)(interface{}, error)
 
 var timeType = reflect.TypeOf(time.Time{})
 var optionalType = reflect.TypeOf(Optional{})
 
-
+// InMemoryBlob is a Blob which stores the entire data as a byte array.
 type InMemoryBlob []byte
 
 func (b InMemoryBlob) Reader() (io.ReadCloser, error) {
@@ -162,6 +200,7 @@ func (b InMemoryBlob) MD5Sum() ([]byte, error) {
 	return h.Sum(retval), nil
 }
 
+// EmbeddedJSON is a factory used internally that makes a ConverterFunc function that returns the specified type.
 func EmbeddedJSON(expectedTypeProto interface{}) ConverterFunc {
 	expectedType := reflect.TypeOf(expectedTypeProto)
 	return func (jsStr string) (interface{}, error) {
@@ -618,6 +657,7 @@ func newDialFunc(connectionTimeout, readTimeout, sendTimeout time.Duration) func
 	}
 }
 
+// Creates a new TDClient instance according to the settings.
 func NewTDClient(settings Settings) (*TDClient, error) {
 	proxy, err := proxyFromInterface(settings.Proxy)
 	if err != nil {

@@ -1,3 +1,21 @@
+//
+// Treasure Data API client for Go
+//
+// Copyright (C) 2014 Treasure Data, Inc.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//    http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 package td_client
 
 import (
@@ -16,6 +34,7 @@ var importSchema = map[string]interface{} {
 	"elapsed_time": 0.,
 }
 
+// `Import` API call.
 func (client *TDClient) Import(db string, table string, format string, blob Blob, uniqueId string) (float64, error) {
 	requestUri := ""
 	if uniqueId != "" {
