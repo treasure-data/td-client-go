@@ -49,6 +49,7 @@ var showAccountSchema = map[string]interface{}{
 		"guaranteed_cores": 0,
 		"maximum_cores":    0,
 		"created_at":       time.Time{},
+		"presto_plan":      0.,
 	},
 }
 
