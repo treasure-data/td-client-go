@@ -2,13 +2,13 @@
 // Treasure Data API client for Go
 //
 // Copyright (C) 2014 Treasure Data, Inc.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,59 +19,58 @@
 package td_client
 
 import (
-	"io"
-	"time"
 	"fmt"
-	"strconv"
+	"io"
 	"net/url"
+	"strconv"
+	"time"
 )
 
 type ListJobsResultElement struct {
-	Id string
-	Type string
-	Database string
-	Status string
-	Query string
-	StartAt time.Time
-	EndAt time.Time
-	CpuTime float64
+	Id         string
+	Type       string
+	Database   string
+	Status     string
+	Query      string
+	StartAt    time.Time
+	EndAt      time.Time
+	CpuTime    float64
 	ResultSize int
-	ResultUrl string
-	Priority int
+	ResultUrl  string
+	Priority   int
 	RetryLimit int
 }
 
-
 type ListJobsResult []ListJobsResultElement
 
-var listJobsSchema = map[string]interface{} {
-	"jobs": []map[string]interface{} {
+var listJobsSchema = map[string]interface{}{
+	"jobs": []map[string]interface{}{
 		{
-			"job_id": "",
-			"type": Optional{"", "?"},
-			"database": "",
-			"status": "",
-			"query": "",
-			"start_at": time.Time{},
-			"end_at": time.Time{},
-			"cpu_time": Optional{0., 0.},
+			"job_id":      "",
+			"type":        Optional{"", "?"},
+			"database":    "",
+			"status":      "",
+			"query":       "",
+			"start_at":    time.Time{},
+			"end_at":      time.Time{},
+			"cpu_time":    Optional{0., 0.},
 			"result_size": Optional{0, 0},
-			"result": "",
-			"priority": 0,
+			"result":      "",
+			"priority":    0,
 			"retry_limit": 0,
 		},
 	},
 }
 
-var jobStatusSchema = map[string]interface{} {
-	"status": "",
-	"job_id": "",
-	"start_at": Optional{time.Time{}, time.Time{}},
-	"created_at": time.Time{},
-	"updated_at": time.Time{},
-	"end_at": Optional{time.Time{}, time.Time{}},
-	"duration": Optional{0., 0.},
-	"cpu_time": Optional{0., 0.},
+var jobStatusSchema = map[string]interface{}{
+	"status":      "",
+	"job_id":      "",
+	"start_at":    Optional{time.Time{}, time.Time{}},
+	"created_at":  time.Time{},
+	"updated_at":  time.Time{},
+	"end_at":      Optional{time.Time{}, time.Time{}},
+	"duration":    Optional{0., 0.},
+	"cpu_time":    Optional{0., 0.},
 	"result_size": Optional{0, 0},
 }
 
@@ -82,67 +81,66 @@ type ShowJobResultDebugElement struct {
 
 // ShowJobResult stores the result of `ShowJobResult` API call.
 type ShowJobResult struct {
-	Id string
-	Type string
-	Database string
-	UserName string
-	Status string
-	Query string
-	Debug ShowJobResultDebugElement
-	Url string
-	Duration int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	StartAt time.Time
-	EndAt time.Time
-	CpuTime float64
-	ResultSize int
-	ResultUrl string
-	Priority int
-	RetryLimit int
+	Id               string
+	Type             string
+	Database         string
+	UserName         string
+	Status           string
+	Query            string
+	Debug            ShowJobResultDebugElement
+	Url              string
+	Duration         int
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	StartAt          time.Time
+	EndAt            time.Time
+	CpuTime          float64
+	ResultSize       int
+	ResultUrl        string
+	Priority         int
+	RetryLimit       int
 	HiveResultSchema []interface{}
 }
 
-var showJobSchema = map[string]interface{} {
-	"job_id": "",
-	"type": Optional{"", "?"},
+var showJobSchema = map[string]interface{}{
+	"job_id":       "",
+	"type":         Optional{"", "?"},
 	"organization": Optional{"", ""},
-	"user_name": "",
-	"database": "",
-	"status": "",
-	"query": "",
-	"debug": map[string]interface{} {
+	"user_name":    "",
+	"database":     "",
+	"status":       "",
+	"query":        "",
+	"debug": map[string]interface{}{
 		"cmdout": Optional{"", ""},
 		"stderr": Optional{"", ""},
 	},
-	"url": "",
-	"duration": Optional{0, 0},
-	"created_at": time.Time{},
-	"updated_at": time.Time{},
-	"start_at": Optional{time.Time{}, time.Time{}},
-	"end_at": Optional{time.Time{}, time.Time{}},
-	"cpu_time": Optional{0., 0.},
-	"result_size": Optional{0, 0},
-	"result": "",
-	"priority": 0,
-	"retry_limit": 0,
+	"url":                "",
+	"duration":           Optional{0, 0},
+	"created_at":         time.Time{},
+	"updated_at":         time.Time{},
+	"start_at":           Optional{time.Time{}, time.Time{}},
+	"end_at":             Optional{time.Time{}, time.Time{}},
+	"cpu_time":           Optional{0., 0.},
+	"result_size":        Optional{0, 0},
+	"result":             "",
+	"priority":           0,
+	"retry_limit":        0,
 	"hive_result_schema": Optional{EmbeddedJSON([]interface{}{}), nil},
 }
 
 type Query struct {
-	Type string
-	Query string
-	ResultUrl string
-	Priority int
+	Type       string
+	Query      string
+	ResultUrl  string
+	Priority   int
 	RetryLimit int
 }
 
-var submitJobSchema = map[string]interface{} {
-	"job": "",
-	"job_id": "",
+var submitJobSchema = map[string]interface{}{
+	"job":      "",
+	"job_id":   "",
 	"database": "",
 }
-
 
 func (client *TDClient) ListJobs() (*ListJobsResult, error) {
 	resp, err := client.get("/v3/jobs/list", nil)
@@ -160,18 +158,18 @@ func (client *TDClient) ListJobs() (*ListJobsResult, error) {
 	jobs := js["jobs"].([]map[string]interface{})
 	retval := make(ListJobsResult, len(jobs))
 	for i, v := range jobs {
-		retval[i] = ListJobsResultElement {
-			Id: v["job_id"].(string),
-			Type: v["type"].(string),
-			Database: v["database"].(string),
-			Status: v["status"].(string),
-			Query: v["query"].(string),
-			StartAt: v["start_at"].(time.Time),
-			EndAt: v["end_at"].(time.Time),
-			CpuTime: v["cpu_time"].(float64),
+		retval[i] = ListJobsResultElement{
+			Id:         v["job_id"].(string),
+			Type:       v["type"].(string),
+			Database:   v["database"].(string),
+			Status:     v["status"].(string),
+			Query:      v["query"].(string),
+			StartAt:    v["start_at"].(time.Time),
+			EndAt:      v["end_at"].(time.Time),
+			CpuTime:    v["cpu_time"].(float64),
 			ResultSize: v["result_size"].(int),
-			ResultUrl: v["result"].(string),
-			Priority: v["priority"].(int),
+			ResultUrl:  v["result"].(string),
+			Priority:   v["priority"].(int),
 			RetryLimit: v["retry_limit"].(int),
 		}
 	}
@@ -193,27 +191,27 @@ func (client *TDClient) ShowJob(jobId string) (*ShowJobResult, error) {
 	}
 	typeStr := js["type"].(string)
 	hiveResultSchema, _ := js["hive_result_schema"].([]interface{})
-	return &ShowJobResult {
-		Id: js["job_id"].(string),
-		Type: typeStr,
+	return &ShowJobResult{
+		Id:       js["job_id"].(string),
+		Type:     typeStr,
 		Database: js["database"].(string),
 		UserName: js["user_name"].(string),
-		Status: js["status"].(string),
-		Query: js["query"].(string),
-		Debug: ShowJobResultDebugElement {
+		Status:   js["status"].(string),
+		Query:    js["query"].(string),
+		Debug: ShowJobResultDebugElement{
 			CmdOut: js["debug"].(map[string]interface{})["cmdout"].(string),
 			StdErr: js["debug"].(map[string]interface{})["stderr"].(string),
 		},
-		Url: js["url"].(string),
-		CreatedAt: js["created_at"].(time.Time),
-		UpdatedAt: js["updated_at"].(time.Time),
-		StartAt: js["start_at"].(time.Time),
-		EndAt: js["end_at"].(time.Time),
-		CpuTime: js["cpu_time"].(float64),
-		ResultSize: js["result_size"].(int),
-		ResultUrl: js["result"].(string),
-		Priority: js["priority"].(int),
-		RetryLimit: js["retry_limit"].(int),
+		Url:              js["url"].(string),
+		CreatedAt:        js["created_at"].(time.Time),
+		UpdatedAt:        js["updated_at"].(time.Time),
+		StartAt:          js["start_at"].(time.Time),
+		EndAt:            js["end_at"].(time.Time),
+		CpuTime:          js["cpu_time"].(float64),
+		ResultSize:       js["result_size"].(int),
+		ResultUrl:        js["result"].(string),
+		Priority:         js["priority"].(int),
+		RetryLimit:       js["retry_limit"].(int),
 		HiveResultSchema: hiveResultSchema,
 	}, nil
 }
@@ -235,7 +233,7 @@ func (client *TDClient) JobStatus(jobId string) (string, error) {
 }
 
 func (client *TDClient) JobResult(jobId string, format string, reader func(io.Reader) error) error {
-	resp, err := client.get(fmt.Sprintf("/v3/job/result/%s", url.QueryEscape(jobId)), url.Values { "format": { format }})
+	resp, err := client.get(fmt.Sprintf("/v3/job/result/%s", url.QueryEscape(jobId)), url.Values{"format": {format}})
 	if err != nil {
 		return err
 	}
@@ -256,18 +254,18 @@ func (client *TDClient) JobResultEach(jobId string, reader func(interface{}) err
 				if err == io.EOF {
 					break
 				}
-				return &APIError {
-					Type: GenericError,
+				return &APIError{
+					Type:    GenericError,
 					Message: "Invalid MessagePack stream",
-					Cause: err,
+					Cause:   err,
 				}
 			}
 			err = reader(v)
 			if err != nil {
-				return &APIError {
-					Type: GenericError,
+				return &APIError{
+					Type:    GenericError,
 					Message: "Reader returned error status",
-					Cause: err,
+					Cause:   err,
 				}
 			}
 		}
@@ -288,7 +286,7 @@ func (client *TDClient) KillJob(jobId string) error {
 }
 
 func (client *TDClient) SubmitQuery(db string, q Query) (string, error) {
-	params := url.Values {}
+	params := url.Values{}
 	params.Set("query", q.Query)
 	if q.ResultUrl != "" {
 		params.Set("result", q.ResultUrl)

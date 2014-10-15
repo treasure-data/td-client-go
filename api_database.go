@@ -2,13 +2,13 @@
 // Treasure Data API client for Go
 //
 // Copyright (C) 2014 Treasure Data, Inc.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,37 +19,37 @@
 package td_client
 
 import (
-	"io"
-	"time"
-	"fmt"
-	"strconv"
-	"net/url"
 	"encoding/json"
+	"fmt"
+	"io"
+	"net/url"
+	"strconv"
+	"time"
 )
 
 // ListDataBasesResultElement represents an item of the result of
 // ListDatabases API call
 type ListDataBasesResultElement struct {
-	Name string
+	Name         string
 	Organization string
-	Count int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Permission string
+	Count        int
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Permission   string
 }
 
 // ListDataBasesResult is a collection of ListDataBasesResultElement
 type ListDataBasesResult []ListDataBasesResultElement
 
-var listDatabasesSchema = map[string]interface{} {
-	"databases": []map[string]interface{} {
-		map[string]interface{} {
-			"name": "",
-			"organization": Optional{"",""},
-			"count": 0,
-			"created_at": time.Time {},
-			"updated_at": time.Time {},
-			"permission": "",
+var listDatabasesSchema = map[string]interface{}{
+	"databases": []map[string]interface{}{
+		map[string]interface{}{
+			"name":         "",
+			"organization": Optional{"", ""},
+			"count":        0,
+			"created_at":   time.Time{},
+			"updated_at":   time.Time{},
+			"permission":   "",
 		},
 	},
 }
@@ -57,49 +57,49 @@ var listDatabasesSchema = map[string]interface{} {
 // ListTablesResultElement represents an item of the result of ListTables API
 // call
 type ListTablesResultElement struct {
-	Id int
-	Name string
-	Type string
-	Count int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	LastImport time.Time
-	LastLogTimestamp time.Time
+	Id                   int
+	Name                 string
+	Type                 string
+	Count                int
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
+	LastImport           time.Time
+	LastLogTimestamp     time.Time
 	EstimatedStorageSize int
-	Schema []interface{}
-	ExpireDays int
-	PrimaryKey string
-	PrimaryKeyType string
+	Schema               []interface{}
+	ExpireDays           int
+	PrimaryKey           string
+	PrimaryKeyType       string
 }
 
 // ListTablesResult is a collection of ListTablesResultElement
 type ListTablesResult []ListTablesResultElement
 
-var listTablesSchema = map[string]interface{} {
+var listTablesSchema = map[string]interface{}{
 	"database": "",
-	"tables": []map[string]interface{} {
-		map[string]interface{} {
-			"id": 0,
-			"name": "",
-			"type": Optional{"", "?"},
-			"count": Optional{0, 0},
-			"created_at": time.Time {},
-			"updated_at": time.Time {},
-			"counter_updated_at": Optional{time.Time {}, time.Time{}},
-			"last_log_timestamp": Optional{time.Time {}, time.Time{}},
+	"tables": []map[string]interface{}{
+		map[string]interface{}{
+			"id":                     0,
+			"name":                   "",
+			"type":                   Optional{"", "?"},
+			"count":                  Optional{0, 0},
+			"created_at":             time.Time{},
+			"updated_at":             time.Time{},
+			"counter_updated_at":     Optional{time.Time{}, time.Time{}},
+			"last_log_timestamp":     Optional{time.Time{}, time.Time{}},
 			"estimated_storage_size": 0,
-			"schema": Optional{EmbeddedJSON([]interface{}{}), nil},
-			"expire_days": Optional{0, 0},
-			"primary_key": Optional{"", ""},
-			"primary_key_type": Optional{"", ""},
+			"schema":                 Optional{EmbeddedJSON([]interface{}{}), nil},
+			"expire_days":            Optional{0, 0},
+			"primary_key":            Optional{"", ""},
+			"primary_key_type":       Optional{"", ""},
 		},
 	},
 }
 
-var deleteTableSchema = map[string]interface{} {
-	"table": "",
+var deleteTableSchema = map[string]interface{}{
+	"table":    "",
 	"database": "",
-	"type": Optional{"", "?"},
+	"type":     Optional{"", "?"},
 }
 
 func (client *TDClient) ListDatabases() (*ListDataBasesResult, error) {
@@ -118,13 +118,13 @@ func (client *TDClient) ListDatabases() (*ListDataBasesResult, error) {
 	databases := js["databases"].([]map[string]interface{})
 	retval := make(ListDataBasesResult, len(databases))
 	for i, v := range databases {
-		retval[i] = ListDataBasesResultElement {
-			Name: v["name"].(string),
+		retval[i] = ListDataBasesResultElement{
+			Name:         v["name"].(string),
 			Organization: v["organization"].(string),
-			Count: v["count"].(int),
-			CreatedAt: v["created_at"].(time.Time),
-			UpdatedAt: v["updated_at"].(time.Time),
-			Permission: v["permission"].(string),
+			Count:        v["count"].(int),
+			CreatedAt:    v["created_at"].(time.Time),
+			UpdatedAt:    v["updated_at"].(time.Time),
+			Permission:   v["permission"].(string),
 		}
 	}
 	return &retval, nil
@@ -170,20 +170,20 @@ func (client *TDClient) ListTables(db string) (*ListTablesResult, error) {
 	tables := js["tables"].([]map[string]interface{})
 	retval := make(ListTablesResult, len(tables))
 	for i, v := range tables {
-		retval[i] = ListTablesResultElement {
-			Id: v["id"].(int),
-			Name: v["name"].(string),
-			Type: v["type"].(string),
-			Count: v["count"].(int),
-			CreatedAt: v["created_at"].(time.Time),
-			UpdatedAt: v["updated_at"].(time.Time),
-			LastImport: v["counter_updated_at"].(time.Time),
-			LastLogTimestamp: v["last_log_timestamp"].(time.Time),
+		retval[i] = ListTablesResultElement{
+			Id:                   v["id"].(int),
+			Name:                 v["name"].(string),
+			Type:                 v["type"].(string),
+			Count:                v["count"].(int),
+			CreatedAt:            v["created_at"].(time.Time),
+			UpdatedAt:            v["updated_at"].(time.Time),
+			LastImport:           v["counter_updated_at"].(time.Time),
+			LastLogTimestamp:     v["last_log_timestamp"].(time.Time),
 			EstimatedStorageSize: v["estimated_storage_size"].(int),
-			Schema: v["schema"].([]interface{}),
-			ExpireDays: v["expire_days"].(int),
-			PrimaryKey: v["primary_key"].(string),
-			PrimaryKeyType: v["primary_key_type"].(string),
+			Schema:               v["schema"].([]interface{}),
+			ExpireDays:           v["expire_days"].(int),
+			PrimaryKey:           v["primary_key"].(string),
+			PrimaryKeyType:       v["primary_key_type"].(string),
 		}
 	}
 	return &retval, nil
@@ -204,8 +204,8 @@ func (client *TDClient) createTable(db string, table string, type_ string, param
 func (client *TDClient) CreateItemTable(db string, table string, primaryKey string, primaryKeyType string) error {
 	return client.createTable(
 		db, table, "item",
-		map[string]string {
-			"primary_key": primaryKey,
+		map[string]string{
+			"primary_key":      primaryKey,
 			"primary_key_type": primaryKeyType,
 		},
 	)
@@ -232,7 +232,7 @@ func (client *TDClient) UpdateSchema(db string, table string, schema []interface
 	if err != nil {
 		return err
 	}
-	resp, err := client.post(fmt.Sprintf("/v3/table/update-schema/%s/%s", url.QueryEscape(db), url.QueryEscape(table)), url.Values { "schema": { string(jsStr) } })
+	resp, err := client.post(fmt.Sprintf("/v3/table/update-schema/%s/%s", url.QueryEscape(db), url.QueryEscape(table)), url.Values{"schema": {string(jsStr)}})
 	if err != nil {
 		return err
 	}
@@ -244,7 +244,7 @@ func (client *TDClient) UpdateSchema(db string, table string, schema []interface
 }
 
 func (client *TDClient) UpdateExpire(db string, table string, expireDays int) error {
-	resp, err := client.post(fmt.Sprintf("/v3/table/update/%s/%s", url.QueryEscape(db), url.QueryEscape(table)), url.Values { "expire_days": { strconv.Itoa(expireDays) }})
+	resp, err := client.post(fmt.Sprintf("/v3/table/update/%s/%s", url.QueryEscape(db), url.QueryEscape(table)), url.Values{"expire_days": {strconv.Itoa(expireDays)}})
 	if err != nil {
 		return err
 	}
@@ -272,7 +272,7 @@ func (client *TDClient) DeleteTable(db string, table string) (string, error) {
 }
 
 func (client *TDClient) Tail(db string, table string, count int, to time.Time, from time.Time, reader func(interface{}) error) error {
-	params := url.Values {}
+	params := url.Values{}
 	if count > 0 {
 		params.Set("count", strconv.Itoa(count))
 	}

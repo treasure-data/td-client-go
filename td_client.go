@@ -2,13 +2,13 @@
 // Treasure Data API client for Go
 //
 // Copyright (C) 2014 Treasure Data, Inc.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,23 +19,23 @@
 package td_client
 
 import (
-	"io"
-	"fmt"
-	"net"
-	"time"
 	"bytes"
-	"errors"
-	"strconv"
-	"strings"
-	"encoding/json"
-	"net/http"
-	"net/url"
-	"io/ioutil"
-	"reflect"
 	"crypto/md5"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/ugorji/go/codec"
+	"io"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"net/url"
+	"reflect"
+	"strconv"
+	"strings"
+	"time"
 )
 
 const (
@@ -47,9 +47,9 @@ const (
 )
 
 const (
-	DEFAULT_ENDPOINT = "api.treasure-data.com"
-	DEFAULT_IMPORT_ENDPOINT = "api-import.treasure-data.com"
-	NEW_DEFAULT_ENDPOINT = "api.treasuredata.com"
+	DEFAULT_ENDPOINT            = "api.treasure-data.com"
+	DEFAULT_IMPORT_ENDPOINT     = "api-import.treasure-data.com"
+	NEW_DEFAULT_ENDPOINT        = "api.treasuredata.com"
 	NEW_DEFAULT_IMPORT_ENDPOINT = "api-import.treasuredata.com"
 )
 
@@ -65,18 +65,23 @@ const (
 
 // APIError represents an error that has occurred during the API call.
 type APIError struct {
-	Type int
+	Type    int
 	Message string
-	Cause error
+	Cause   error
 }
 
 func stringizeAPIErrorType(type_ int) string {
 	switch type_ {
-	case GenericError: return "GenericError"
-	case AuthError: return "AuthError"
-	case ForbiddenError: return "ForbiddenError"
-	case AlreadyExistsError: return "AlreadyExistsError"
-	case NotFoundError: return "NotFoundError"
+	case GenericError:
+		return "GenericError"
+	case AuthError:
+		return "AuthError"
+	case ForbiddenError:
+		return "ForbiddenError"
+	case AlreadyExistsError:
+		return "AlreadyExistsError"
+	case NotFoundError:
+		return "NotFoundError"
 	}
 	return "Unknown"
 }
@@ -104,18 +109,18 @@ type EndpointRouter interface {
 //
 // Transport allows you to take more control over the communication.
 type Settings struct {
-	ApiKey string                     // Treasure Data Account API key
-	UserAgent string                  // (Optional) Name that will appear as the User-Agent HTTP header
-	Router EndpointRouter             // (Optional) Endpoint router
-	ConnectionTimeout time.Duration   // (Optional) Connection timeout
-	ReadTimeout time.Duration         // (Optional) Read timeout.
-	SendTimeout time.Duration         // (Optional) Send timeout.
-	Ssl bool                          // (Optional) Whether to use the secure connection.
-	RootCAs *x509.CertPool            // (Optional) Specify the CA certificates.
-	Port int                          // (Optional) Port number.
-	Proxy interface{}                 // (Optional) HTTP proxy to use.
-	Transport http.RoundTripper       // (Optional) Overrides the transport used to establish the connection.
-	Headers map[string]string         // (Optional) Additional headers that will be sent to the endpoint.
+	ApiKey            string            // Treasure Data Account API key
+	UserAgent         string            // (Optional) Name that will appear as the User-Agent HTTP header
+	Router            EndpointRouter    // (Optional) Endpoint router
+	ConnectionTimeout time.Duration     // (Optional) Connection timeout
+	ReadTimeout       time.Duration     // (Optional) Read timeout.
+	SendTimeout       time.Duration     // (Optional) Send timeout.
+	Ssl               bool              // (Optional) Whether to use the secure connection.
+	RootCAs           *x509.CertPool    // (Optional) Specify the CA certificates.
+	Port              int               // (Optional) Port number.
+	Proxy             interface{}       // (Optional) HTTP proxy to use.
+	Transport         http.RoundTripper // (Optional) Overrides the transport used to establish the connection.
+	Headers           map[string]string // (Optional) Additional headers that will be sent to the endpoint.
 }
 
 // A FixedEndpointRouter instance represents an EndpointRouter that always routes the request to the same endpoint.
@@ -130,7 +135,7 @@ func (r *FixedEndpointRouter) Route(_ string) string {
 // V3EndpointRouter routes the import request to the dedicated endpoint and other requests to the default.
 type V3EndpointRouter struct {
 	DefaultEndpoint string
-	ImportEndpoint string
+	ImportEndpoint  string
 }
 
 func (r *V3EndpointRouter) Route(requestUri string) string {
@@ -142,25 +147,25 @@ func (r *V3EndpointRouter) Route(requestUri string) string {
 }
 
 // DefaultRouter is a V3EndpointRouter with the hard-coded endpoints.
-var DefaultRouter = V3EndpointRouter {
+var DefaultRouter = V3EndpointRouter{
 	DefaultEndpoint: NEW_DEFAULT_ENDPOINT,
-	ImportEndpoint: NEW_DEFAULT_IMPORT_ENDPOINT,
+	ImportEndpoint:  NEW_DEFAULT_IMPORT_ENDPOINT,
 }
 
 // TDClient represents a context used to talk to the Treasure Data API.
 type TDClient struct {
-	apiKey string
-	userAgent string
-	router EndpointRouter
-	ssl bool
-	rootCAs *x509.CertPool
-	port int
+	apiKey            string
+	userAgent         string
+	router            EndpointRouter
+	ssl               bool
+	rootCAs           *x509.CertPool
+	port              int
 	connectionTimeout time.Duration
-	readTimeout time.Duration
-	sendTimeout time.Duration
-	transport http.RoundTripper
-	headers map[string]string
-	mpCodec *codec.MsgpackHandle
+	readTimeout       time.Duration
+	sendTimeout       time.Duration
+	transport         http.RoundTripper
+	headers           map[string]string
+	mpCodec           *codec.MsgpackHandle
 }
 
 // Blob denotes a concept, which is opaque data that can be read bytewise through an io.Reader, has a certain size and provides a calculated MD5 sum.
@@ -172,12 +177,12 @@ type Blob interface {
 
 // Used in internal schema, marking the field as optional as well as providing the default.
 type Optional struct {
-	V interface{}
+	V       interface{}
 	Default interface{}
 }
 
 // Used in internal schema, marking the field so that it will be unmarshaled by the specified function.
-type ConverterFunc func(string)(interface{}, error)
+type ConverterFunc func(string) (interface{}, error)
 
 var timeType = reflect.TypeOf(time.Time{})
 var optionalType = reflect.TypeOf(Optional{})
@@ -203,7 +208,7 @@ func (b InMemoryBlob) MD5Sum() ([]byte, error) {
 // EmbeddedJSON is a factory used internally that makes a ConverterFunc function that returns the specified type.
 func EmbeddedJSON(expectedTypeProto interface{}) ConverterFunc {
 	expectedType := reflect.TypeOf(expectedTypeProto)
-	return func (jsStr string) (interface{}, error) {
+	return func(jsStr string) (interface{}, error) {
 		var retval interface{}
 		switch expectedType.Kind() {
 		case reflect.Map:
@@ -231,10 +236,10 @@ func (client *TDClient) buildUrl(requestUri string, params url.Values) *url.URL 
 	if client.port != 0 {
 		host = host + ":" + strconv.Itoa(client.port)
 	}
-	return &url.URL {
-		Scheme: scheme,
-		Host: host,
-		Path: requestUri,
+	return &url.URL{
+		Scheme:   scheme,
+		Host:     host,
+		Path:     requestUri,
 		RawQuery: params.Encode(),
 	}
 }
@@ -249,7 +254,7 @@ func (client *TDClient) newRequest(method string, requestUri string, params url.
 		getParams = params
 	}
 	err := (error)(nil)
-	contentLength:= int64(0)
+	contentLength := int64(0)
 	reader := (io.ReadCloser)(nil)
 	if body != nil {
 		contentLength, err = body.Size()
@@ -284,7 +289,7 @@ func (client *TDClient) newRequest(method string, requestUri string, params url.
 	}
 	req.Header.Set("Date", time.Now().Format(time.RFC822))
 	req.Header.Set("User-Agent", client.userAgent)
-	req.Header.Set("Authorization", "TD1 " + client.apiKey)
+	req.Header.Set("Authorization", "TD1 "+client.apiKey)
 	return req, nil
 }
 
@@ -371,10 +376,10 @@ func (client *TDClient) buildError(resp *http.Response, type_ int, message strin
 	} else {
 		message = fmt.Sprintf("%d: %s: %s", statusCode, message, errorMessage)
 	}
-	return &APIError {
-		Type: type_,
+	return &APIError{
+		Type:    type_,
 		Message: message,
-		Cause: cause,
+		Cause:   cause,
 	}
 }
 
@@ -419,7 +424,7 @@ func defaultFor(type_ reflect.Type) interface{} {
 	case reflect.Slice, reflect.Array:
 		return []interface{}{}
 	case reflect.Map:
-		return map[string]interface{} {}
+		return map[string]interface{}{}
 	default:
 		return nil
 	}
@@ -465,9 +470,9 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 			return nil, errors.New(fmt.Sprintf("type mismatch (%s != %s) for %s", stringizeType(gottenType), stringizeType(expectedJsonType), path))
 		}
 	}
-	switch (expectedType.Kind()) {
+	switch expectedType.Kind() {
 	case reflect.Func:
-		res := ev.Call([]reflect.Value { reflect.ValueOf(v) })
+		res := ev.Call([]reflect.Value{reflect.ValueOf(v)})
 		v = res[0].Interface()
 		err := res[1].Interface()
 		// if !ok {
@@ -500,7 +505,7 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 			return nil, errors.New(fmt.Sprintf("unsupported type %s in the schema for %s", expectedType.String(), path))
 		}
 	case reflect.Slice:
-		_path := make([]byte, len(path), len(path) + 16)
+		_path := make([]byte, len(path), len(path)+16)
 		copy(_path, path)
 		_path = append(_path, '[')
 		h := len(_path)
@@ -522,7 +527,7 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 		}
 		v = rv.Interface()
 	case reflect.Map:
-		_path := make([]byte, len(path), len(path) + 1 + 16)
+		_path := make([]byte, len(path), len(path)+1+16)
 		copy(_path, path)
 		if path != "/" {
 			_path = append(_path, '/')
@@ -576,27 +581,27 @@ func (client *TDClient) validateAndCoerce(js map[string]interface{}, schema map[
 func (client *TDClient) checkedJson(resp *http.Response, schema map[string]interface{}) (map[string]interface{}, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, &APIError {
-			Type: GenericError,
+		return nil, &APIError{
+			Type:    GenericError,
 			Message: "failed to read response",
-			Cause: err,
+			Cause:   err,
 		}
 	}
 	js := make(map[string]interface{})
 	err = json.Unmarshal(body, &js)
 	if err != nil {
-		return nil, &APIError {
-			Type: GenericError,
+		return nil, &APIError{
+			Type:    GenericError,
 			Message: "failed to parse response: " + string(body),
-			Cause: err,
+			Cause:   err,
 		}
 	}
 	js, err = client.validateAndCoerce(js, schema)
 	if err != nil {
-		return nil, &APIError {
-			Type: GenericError,
+		return nil, &APIError{
+			Type:    GenericError,
 			Message: "failed to parse response: " + err.Error(),
-			Cause: nil,
+			Cause:   nil,
 		}
 	}
 	return js, nil
@@ -611,21 +616,21 @@ func (client *TDClient) getMessagePackEncoder(writer io.Writer) *codec.Encoder {
 }
 
 func dictToValues(dict map[string]string) url.Values {
-	retval := url.Values {}
+	retval := url.Values{}
 	for k, v := range dict {
 		retval.Set(k, v)
 	}
 	return retval
 }
 
-func proxyFromInterface(proxy interface{}) (retval func(*http.Request)(*url.URL, error), err error) {
+func proxyFromInterface(proxy interface{}) (retval func(*http.Request) (*url.URL, error), err error) {
 	if proxy == nil {
 		return nil, nil
 	}
 	switch proxy := proxy.(type) {
 	case *url.URL:
 		retval = http.ProxyURL(proxy)
-	case (func(*http.Request)(*url.URL, error)):
+	case (func(*http.Request) (*url.URL, error)):
 		retval = proxy
 	case string:
 		var proxyUrl *url.URL
@@ -640,8 +645,8 @@ func proxyFromInterface(proxy interface{}) (retval func(*http.Request)(*url.URL,
 	return
 }
 
-func newDialFunc(connectionTimeout, readTimeout, sendTimeout time.Duration) func(network, address string)(net.Conn, error) {
-	dialer := &net.Dialer {
+func newDialFunc(connectionTimeout, readTimeout, sendTimeout time.Duration) func(network, address string) (net.Conn, error) {
+	dialer := &net.Dialer{
 		Timeout: connectionTimeout,
 	}
 	return func(network, address string) (net.Conn, error) {
@@ -649,9 +654,9 @@ func newDialFunc(connectionTimeout, readTimeout, sendTimeout time.Duration) func
 		if err != nil {
 			return nil, err
 		}
-		return &TimeoutConn {
-			Conn: conn,
-			ReadTimeout: readTimeout,
+		return &TimeoutConn{
+			Conn:         conn,
+			ReadTimeout:  readTimeout,
 			WriteTimeout: sendTimeout,
 		}, nil
 	}
@@ -665,18 +670,18 @@ func NewTDClient(settings Settings) (*TDClient, error) {
 	}
 	transport := settings.Transport
 	if transport == nil {
-		transport = &http.Transport {
+		transport = &http.Transport{
 			Proxy: proxy,
 			Dial: newDialFunc(
 				settings.ConnectionTimeout,
 				settings.ReadTimeout,
 				settings.SendTimeout,
 			),
-			TLSClientConfig: &tls.Config {
+			TLSClientConfig: &tls.Config{
 				RootCAs: settings.RootCAs,
 			},
 			ResponseHeaderTimeout: settings.ReadTimeout,
-			DisableCompression: false,
+			DisableCompression:    false,
 		}
 	}
 	router := settings.Router
@@ -687,18 +692,18 @@ func NewTDClient(settings Settings) (*TDClient, error) {
 	if settings.UserAgent != "" {
 		userAgent += "; " + settings.UserAgent
 	}
-	return &TDClient {
-		apiKey: settings.ApiKey,
-		userAgent: userAgent,
-		router: router,
-		ssl: settings.Ssl,
-		rootCAs: settings.RootCAs,
-		port: settings.Port,
+	return &TDClient{
+		apiKey:            settings.ApiKey,
+		userAgent:         userAgent,
+		router:            router,
+		ssl:               settings.Ssl,
+		rootCAs:           settings.RootCAs,
+		port:              settings.Port,
 		connectionTimeout: settings.ConnectionTimeout,
-		readTimeout: settings.ReadTimeout,
-		sendTimeout: settings.SendTimeout,
-		transport: transport,
-		headers: settings.Headers,
-		mpCodec: &codec.MsgpackHandle {},
+		readTimeout:       settings.ReadTimeout,
+		sendTimeout:       settings.SendTimeout,
+		transport:         transport,
+		headers:           settings.Headers,
+		mpCodec:           &codec.MsgpackHandle{},
 	}, nil
 }

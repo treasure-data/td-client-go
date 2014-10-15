@@ -2,13 +2,13 @@
 // Treasure Data API client for Go
 //
 // Copyright (C) 2014 Treasure Data, Inc.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,17 +25,17 @@ import (
 
 // TimeoutConn wraps a regular net.Conn so read / write operations on it will time out in the specified amount of time.
 type TimeoutConn struct {
-	Conn net.Conn
-	ReadTimeout time.Duration
-	WriteTimeout time.Duration
-	readDeadline time.Time
+	Conn          net.Conn
+	ReadTimeout   time.Duration
+	WriteTimeout  time.Duration
+	readDeadline  time.Time
 	writeDeadline time.Time
 }
 
 func (conn *TimeoutConn) Read(b []byte) (int, error) {
 	if conn.readDeadline.IsZero() {
 		if conn.ReadTimeout == 0 {
-			conn.Conn.SetReadDeadline(time.Time {})
+			conn.Conn.SetReadDeadline(time.Time{})
 		} else {
 			conn.Conn.SetReadDeadline(time.Now().Add(conn.ReadTimeout))
 		}
@@ -48,7 +48,7 @@ func (conn *TimeoutConn) Read(b []byte) (int, error) {
 func (conn *TimeoutConn) Write(b []byte) (int, error) {
 	if conn.writeDeadline.IsZero() {
 		if conn.WriteTimeout == 0 {
-			conn.Conn.SetWriteDeadline(time.Time {})
+			conn.Conn.SetWriteDeadline(time.Time{})
 		} else {
 			conn.Conn.SetWriteDeadline(time.Now().Add(conn.WriteTimeout))
 		}

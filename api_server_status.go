@@ -2,13 +2,13 @@
 // Treasure Data API client for Go
 //
 // Copyright (C) 2014 Treasure Data, Inc.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,7 @@ type ServerStatusResult struct {
 	Status string
 }
 
-
-var serverStatusSchema = map[string]interface{} {
+var serverStatusSchema = map[string]interface{}{
 	"status": "",
 }
 
@@ -40,7 +39,7 @@ func (client *TDClient) ServerStatus() (*ServerStatusResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ServerStatusResult {
+	return &ServerStatusResult{
 		Status: js["status"].(string),
 	}, nil
 }

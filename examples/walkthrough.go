@@ -1,18 +1,18 @@
 package main
 
 import (
-	td_client "github.com/treasure-data/td-client-go"
-	"os"
-	"fmt"
-	"time"
 	"bytes"
-	"strconv"
 	"compress/gzip"
+	"fmt"
+	td_client "github.com/treasure-data/td-client-go"
 	"github.com/ugorji/go/codec"
+	"os"
+	"strconv"
+	"time"
 )
 
 func CompressWithGzip(b []byte) []byte {
-	retval := bytes.Buffer {}
+	retval := bytes.Buffer{}
 	w := gzip.NewWriter(&retval)
 	w.Write(b)
 	w.Close()
@@ -21,7 +21,7 @@ func CompressWithGzip(b []byte) []byte {
 
 func main() {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
-	client, err := td_client.NewTDClient(td_client.Settings {
+	client, err := td_client.NewTDClient(td_client.Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
@@ -90,17 +90,17 @@ func main() {
 			return
 		}
 	} else {
-		err = client.UpdateSchema("sample_db2", "test", []interface{} {
-			[]string { "a", "string" },
-			[]string { "b", "string" },
+		err = client.UpdateSchema("sample_db2", "test", []interface{}{
+			[]string{"a", "string"},
+			[]string{"b", "string"},
 		})
 	}
-	data := bytes.Buffer {}
-	handle := codec.MsgpackHandle {}
+	data := bytes.Buffer{}
+	handle := codec.MsgpackHandle{}
 	encoder := codec.NewEncoder(&data, &handle)
 	for i := 0; i < 10000; i += 1 {
-		encoder.Encode(map[string]interface{} {
-			"time":i, "a": strconv.Itoa(i), "b": strconv.Itoa(i),
+		encoder.Encode(map[string]interface{}{
+			"time": i, "a": strconv.Itoa(i), "b": strconv.Itoa(i),
 		})
 	}
 	payload := CompressWithGzip(data.Bytes())
@@ -111,11 +111,11 @@ func main() {
 		return
 	}
 	fmt.Printf("elapsed time:%g\n", time_)
-	jobId, err := client.SubmitQuery("sample_db2", td_client.Query {
-		Type: "hive",
-		Query: "SELECT COUNT(*) AS c FROM test WHERE a >= 5000",
-		ResultUrl: "",
-		Priority: 0,
+	jobId, err := client.SubmitQuery("sample_db2", td_client.Query{
+		Type:       "hive",
+		Query:      "SELECT COUNT(*) AS c FROM test WHERE a >= 5000",
+		ResultUrl:  "",
+		Priority:   0,
 		RetryLimit: 0,
 	})
 	if err != nil {

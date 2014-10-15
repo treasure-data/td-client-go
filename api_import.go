@@ -2,13 +2,13 @@
 // Treasure Data API client for Go
 //
 // Copyright (C) 2014 Treasure Data, Inc.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,18 +19,18 @@
 package td_client
 
 import (
-	"fmt"
 	"bytes"
-	"errors"
-	"net/url"
 	"encoding/hex"
+	"errors"
+	"fmt"
+	"net/url"
 )
 
-var importSchema = map[string]interface{} {
-	"unique_id": Optional{"", ""},
-	"database": "",
-	"table": "",
-	"md5_hex": "",
+var importSchema = map[string]interface{}{
+	"unique_id":    Optional{"", ""},
+	"database":     "",
+	"table":        "",
+	"md5_hex":      "",
 	"elapsed_time": 0.,
 }
 
@@ -58,7 +58,7 @@ func (client *TDClient) Import(db string, table string, format string, blob Blob
 		return 0., err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode / 100 != 2 {
+	if resp.StatusCode/100 != 2 {
 		return 0., client.buildError(resp, -1, "Import failed", nil)
 	}
 	js, err := client.checkedJson(resp, importSchema)
