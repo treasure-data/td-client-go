@@ -94,6 +94,10 @@ func main() {
 			[]string{"a", "string"},
 			[]string{"b", "string"},
 		})
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
 	}
 	data := bytes.Buffer{}
 	handle := codec.MsgpackHandle{}
