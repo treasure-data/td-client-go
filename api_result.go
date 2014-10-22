@@ -33,8 +33,9 @@ type ListResultsResult []ListResultsResultElement
 var listResultsSchema = map[string]interface{}{
 	"results": []map[string]string{
 		{
-			"name": "",
-			"url":  "",
+			"name":         "",
+			"organization": "",
+			"url":          "",
 		},
 	},
 }
