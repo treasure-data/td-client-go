@@ -63,7 +63,7 @@ var listJobsSchema = map[string]interface{}{
 			"status":             "",
 			"query":              "",
 			"start_at":           time.Time{},
-			"end_at":             time.Time{},
+			"end_at":             Optional{time.Time{}, time.Time{}},
 			"created_at":         time.Time{},
 			"updated_at":         time.Time{},
 			"duration":           Optional{0., 0.},
