@@ -306,7 +306,7 @@ func (client *TDClient) JobResultEach(jobId string, reader func(interface{}) err
 }
 
 func (client *TDClient) KillJob(jobId string) error {
-	resp, err := client.get(fmt.Sprintf("/v3/job/kill/%s", url.QueryEscape(jobId)), nil)
+	resp, err := client.post(fmt.Sprintf("/v3/job/kill/%s", url.QueryEscape(jobId)), nil)
 	if err != nil {
 		return err
 	}
