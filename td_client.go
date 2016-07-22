@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ugorji/go/codec"
 	"io"
 	"io/ioutil"
 	"net"
@@ -36,6 +35,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ugorji/go/codec"
 )
 
 const (
