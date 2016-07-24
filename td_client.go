@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ugorji/go/codec"
 	"io"
 	"io/ioutil"
 	"net"
@@ -36,6 +35,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ugorji/go/codec"
 )
 
 const (
@@ -60,7 +61,8 @@ const (
 const (
 	// Represents the date/time format for time.Time.Format(),
 	// which is used in several API function parameters and results.
-	TDAPIDateTime = "2006-01-02 15:04:05 MST"
+	TDAPIDateTime            = "2006-01-02 15:04:05 MST"
+	TDAPIDateTimeNumericZone = "2006-01-02 15:04:05 -0700"
 )
 
 // APIError represents an error that has occurred during the API call.
@@ -494,9 +496,12 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 			} else {
 				_v, err := time.Parse(time.RFC3339, sv)
 				if err != nil {
-					_v, err = time.Parse(TDAPIDateTime, sv)
+					_v, err = time.Parse(TDAPIDateTimeNumericZone, sv)
 					if err != nil {
-						return nil, errors.New(fmt.Sprintf("invalid time string %s for %s", sv, path))
+						_v, err = time.Parse(TDAPIDateTime, sv)
+						if err != nil {
+							return nil, errors.New(fmt.Sprintf("invalid time string %s for %s", sv, path))
+						}
 					}
 				}
 				v = _v.UTC()
