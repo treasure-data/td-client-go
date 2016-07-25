@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ugorji/go/codec"
 	"io"
 	"io/ioutil"
 	"net"
@@ -36,6 +35,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ugorji/go/codec"
 )
 
 const (
@@ -466,6 +467,12 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 	if expectedJsonType.Kind() != gottenType.Kind() {
 		if gottenType.Kind() == reflect.Float64 && integralType(expectedJsonType) {
 			v = reflect.ValueOf(v).Convert(expectedJsonType).Interface()
+		} else if gottenType.Kind() == reflect.Map && expectedJsonType.Kind() == reflect.String {
+			jsonString, err := json.Marshal(v)
+			if err != nil {
+				return nil, fmt.Errorf("%s is failed parse map to string %s", path, err.Error())
+			}
+			v = fmt.Sprintf("%s", string(jsonString))
 		} else {
 			return nil, errors.New(fmt.Sprintf("type mismatch (%s != %s) for %s", stringizeType(gottenType), stringizeType(expectedJsonType), path))
 		}

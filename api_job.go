@@ -32,34 +32,56 @@ type ListJobsResultElement struct {
 	Database   string
 	Status     string
 	Query      string
+	Duration   int
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 	StartAt    time.Time
 	EndAt      time.Time
 	CpuTime    float64
 	ResultSize int
+	NumRecords int
 	ResultUrl  string
 	Priority   int
 	RetryLimit int
 }
 
-type ListJobsResult []ListJobsResultElement
+type ListJobsResultElements []ListJobsResultElement
+
+type ListJobsResult struct {
+	ListJobsResultElements ListJobsResultElements
+	Count                  int
+	From                   string
+	To                     string
+}
 
 var listJobsSchema = map[string]interface{}{
 	"jobs": []map[string]interface{}{
 		{
-			"job_id":      "",
-			"type":        Optional{"", "?"},
-			"database":    "",
-			"status":      "",
-			"query":       "",
-			"start_at":    time.Time{},
-			"end_at":      time.Time{},
-			"cpu_time":    Optional{0., 0.},
-			"result_size": Optional{0, 0},
-			"result":      "",
-			"priority":    0,
-			"retry_limit": 0,
+			"job_id":             "",
+			"type":               Optional{"", "?"},
+			"database":           "",
+			"status":             "",
+			"query":              "",
+			"start_at":           Optional{time.Time{}, time.Time{}},
+			"end_at":             Optional{time.Time{}, time.Time{}},
+			"created_at":         time.Time{},
+			"updated_at":         time.Time{},
+			"duration":           Optional{0., 0.},
+			"cpu_time":           Optional{0., 0.},
+			"result_size":        Optional{0, 0},
+			"num_records":        Optional{0, 0},
+			"user_name":          "",
+			"result":             "",
+			"url":                "",
+			"hive_result_schema": Optional{"", "?"},
+			"organization":       Optional{"", "?"},
+			"priority":           0,
+			"retry_limit":        0,
 		},
 	},
+	"count": Optional{0, 0},
+	"to":    Optional{"", "?"},
+	"from":  Optional{"", "?"},
 }
 
 var jobStatusSchema = map[string]interface{}{
@@ -72,6 +94,7 @@ var jobStatusSchema = map[string]interface{}{
 	"duration":    Optional{0., 0.},
 	"cpu_time":    Optional{0., 0.},
 	"result_size": Optional{0, 0},
+	"num_records": Optional{0, 0},
 }
 
 type ShowJobResultDebugElement struct {
@@ -96,6 +119,7 @@ type ShowJobResult struct {
 	EndAt            time.Time
 	CpuTime          float64
 	ResultSize       int
+	NumRecords       int
 	ResultUrl        string
 	Priority         int
 	RetryLimit       int
@@ -122,6 +146,7 @@ var showJobSchema = map[string]interface{}{
 	"end_at":             Optional{time.Time{}, time.Time{}},
 	"cpu_time":           Optional{0., 0.},
 	"result_size":        Optional{0, 0},
+	"num_records":        Optional{0, 0},
 	"result":             "",
 	"priority":           0,
 	"retry_limit":        0,
@@ -143,7 +168,7 @@ var submitJobSchema = map[string]interface{}{
 }
 
 func (client *TDClient) ListJobs() (*ListJobsResult, error) {
-	resp, err := client.get("/v3/jobs/list", nil)
+	resp, err := client.get("/v3/job/list", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +181,8 @@ func (client *TDClient) ListJobs() (*ListJobsResult, error) {
 		return nil, err
 	}
 	jobs := js["jobs"].([]map[string]interface{})
-	retval := make(ListJobsResult, len(jobs))
+	listJobsResult := ListJobsResult{}
+	retval := make(ListJobsResultElements, len(jobs))
 	for i, v := range jobs {
 		retval[i] = ListJobsResultElement{
 			Id:         v["job_id"].(string),
@@ -168,12 +194,17 @@ func (client *TDClient) ListJobs() (*ListJobsResult, error) {
 			EndAt:      v["end_at"].(time.Time),
 			CpuTime:    v["cpu_time"].(float64),
 			ResultSize: v["result_size"].(int),
+			NumRecords: v["num_records"].(int),
 			ResultUrl:  v["result"].(string),
 			Priority:   v["priority"].(int),
 			RetryLimit: v["retry_limit"].(int),
 		}
 	}
-	return &retval, nil
+	listJobsResult.ListJobsResultElements = retval
+	listJobsResult.Count = js["count"].(int)
+	listJobsResult.From = js["from"].(string)
+	listJobsResult.To = js["to"].(string)
+	return &listJobsResult, nil
 }
 
 func (client *TDClient) ShowJob(jobId string) (*ShowJobResult, error) {
@@ -209,6 +240,7 @@ func (client *TDClient) ShowJob(jobId string) (*ShowJobResult, error) {
 		EndAt:            js["end_at"].(time.Time),
 		CpuTime:          js["cpu_time"].(float64),
 		ResultSize:       js["result_size"].(int),
+		NumRecords:       js["num_records"].(int),
 		ResultUrl:        js["result"].(string),
 		Priority:         js["priority"].(int),
 		RetryLimit:       js["retry_limit"].(int),
@@ -274,7 +306,7 @@ func (client *TDClient) JobResultEach(jobId string, reader func(interface{}) err
 }
 
 func (client *TDClient) KillJob(jobId string) error {
-	resp, err := client.get(fmt.Sprintf("/v3/job/kill/%s", url.QueryEscape(jobId)), nil)
+	resp, err := client.post(fmt.Sprintf("/v3/job/kill/%s", url.QueryEscape(jobId)), nil)
 	if err != nil {
 		return err
 	}
