@@ -496,9 +496,9 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 			} else {
 				_v, err := time.Parse(time.RFC3339, sv)
 				if err != nil {
-					_v, err = time.Parse(TDAPIDateTimeNumericZone, sv)
+					_v, err = time.Parse(TDAPIDateTime, sv)
 					if err != nil {
-						_v, err = time.Parse(TDAPIDateTime, sv)
+						_v, err = time.Parse(TDAPIDateTimeNumericZone, sv)
 						if err != nil {
 							return nil, errors.New(fmt.Sprintf("invalid time string %s for %s", sv, path))
 						}
