@@ -6,3 +6,8 @@ go:
   - 1.5
   - 1.6
   - tip
+before_install:
+  - go get github.com/ugorji/go/codec
+
+script:
+  - go test -v ./...
