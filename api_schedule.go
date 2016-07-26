@@ -244,7 +244,9 @@ func (client *TDClient) CreateSchedule(scheduleName string, options map[string]s
 		return nil, err
 	}
 	defer resp.Body.Close()
-
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "Failed for create schedule", nil)
+	}
 	schedule, err := client.checkedJson(resp, scheduleResultSchema)
 	if err != nil {
 		return nil, err
@@ -274,6 +276,9 @@ func (client *TDClient) DeleteSchedule(scheduleName string) (*DeleteScheduleResu
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "Failed for delete schedule", nil)
+	}
 	schedule, err := client.checkedJson(resp, deleteScheduleSchema)
 	if err != nil {
 		return nil, err
@@ -298,7 +303,9 @@ func (client *TDClient) UpdateSchedule(scheduleName string, options map[string]s
 		return nil, err
 	}
 	defer resp.Body.Close()
-
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "Failed for update schedule", nil)
+	}
 	schedule, err := client.checkedJson(resp, scheduleResultSchema)
 	if err != nil {
 		return nil, err
@@ -328,6 +335,9 @@ func (client *TDClient) RunSchedule(scheduleName string, runTime string, options
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "Failed for run schedule", nil)
+	}
 	js, err := client.checkedJson(resp, runScheduleResultSchema)
 	if err != nil {
 		return nil, err
@@ -351,6 +361,9 @@ func (client *TDClient) ScheduleHistory(scheduleName string, options map[string]
 		return nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "Failed for get schedule history", nil)
+	}
 	js, err := client.checkedJson(resp, scheduleHistorySchema)
 	if err != nil {
 		return nil, err
