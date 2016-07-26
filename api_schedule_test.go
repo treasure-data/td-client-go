@@ -23,8 +23,6 @@ import (
 	"os"
 	"testing"
 	"time"
-
-	"github.com/treasure-data/td-client-go"
 )
 
 const TestDatabaseName = "test_databse"
@@ -35,7 +33,7 @@ const TestTableName = "test_table"
 func TestMain(m *testing.M) {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
 
-	client, _ := td_client.NewTDClient(td_client.Settings{
+	client, _ := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	client.CreateDatabase(TestDatabaseName, nil)
@@ -48,7 +46,7 @@ func TestMain(m *testing.M) {
 func TestListSchedules(t *testing.T) {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
 
-	client, err := td_client.NewTDClient(td_client.Settings{
+	client, err := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
@@ -66,7 +64,7 @@ func TestListSchedules(t *testing.T) {
 
 func TestCreateSchedule(t *testing.T) {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
-	client, err := td_client.NewTDClient(td_client.Settings{
+	client, err := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
@@ -92,7 +90,7 @@ func TestCreateSchedule(t *testing.T) {
 
 func TestUpdateSchedule(t *testing.T) {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
-	client, err := td_client.NewTDClient(td_client.Settings{
+	client, err := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
@@ -111,7 +109,7 @@ func TestUpdateSchedule(t *testing.T) {
 
 func TestRunSchedule(t *testing.T) {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
-	client, err := td_client.NewTDClient(td_client.Settings{
+	client, err := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
@@ -139,7 +137,7 @@ func TestRunSchedule(t *testing.T) {
 
 func TestScheduleHistory(t *testing.T) {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
-	client, err := td_client.NewTDClient(td_client.Settings{
+	client, err := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
@@ -157,7 +155,7 @@ func TestScheduleHistory(t *testing.T) {
 
 func TestDeleteSchedule(t *testing.T) {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
-	client, err := td_client.NewTDClient(td_client.Settings{
+	client, err := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
