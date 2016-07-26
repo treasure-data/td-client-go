@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	td_client "github.com/treasure-data/td-client-go"
 	"github.com/ugorji/go/codec"
 	"os"
 	"strconv"
@@ -23,7 +22,7 @@ func CompressWithGzip(b []byte) []byte {
 
 func Example_walkthrough() {
 	apiKey := os.Getenv("TD_CLIENT_API_KEY")
-	client, err := td_client.NewTDClient(td_client.Settings{
+	client, err := NewTDClient(Settings{
 		ApiKey: apiKey,
 	})
 	if err != nil {
@@ -78,16 +77,16 @@ func Example_walkthrough() {
 	}
 	err = client.CreateDatabase("sample_db2", nil)
 	if err != nil {
-		_err := err.(*td_client.APIError)
-		if _err == nil || _err.Type != td_client.AlreadyExistsError {
+		_err := err.(*APIError)
+		if _err == nil || _err.Type != AlreadyExistsError {
 			fmt.Println(err.Error())
 			return
 		}
 	}
 	err = client.CreateLogTable("sample_db2", "test")
 	if err != nil {
-		_err := err.(*td_client.APIError)
-		if _err == nil || _err.Type != td_client.AlreadyExistsError {
+		_err := err.(*APIError)
+		if _err == nil || _err.Type != AlreadyExistsError {
 			fmt.Println(err.Error())
 			return
 		}
@@ -107,13 +106,13 @@ func Example_walkthrough() {
 	}
 	payload := CompressWithGzip(data.Bytes())
 	fmt.Printf("payloadSize:%d\n", len(payload))
-	time_, err := client.Import("sample_db2", "test", "msgpack.gz", (td_client.InMemoryBlob)(payload), "")
+	time_, err := client.Import("sample_db2", "test", "msgpack.gz", (InMemoryBlob)(payload), "")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 	fmt.Printf("elapsed time:%g\n", time_)
-	jobId, err := client.SubmitQuery("sample_db2", td_client.Query{
+	jobId, err := client.SubmitQuery("sample_db2", Query{
 		Type:       "hive",
 		Query:      "SELECT COUNT(*) AS c FROM test WHERE a >= 5000",
 		ResultUrl:  "",
@@ -293,7 +292,7 @@ func ExampleTDClient_UpdateSchema() {
 
 func ExampleTDClient_Import() {
 	payload := []byte{ /*...*/ } // gzip'ed msgpack records
-	time_, err := client.Import("sample_db2", "test", "msgpack.gz", (td_client.InMemoryBlob)(payload), "")
+	time_, err := client.Import("sample_db2", "test", "msgpack.gz", (InMemoryBlob)(payload), "")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -301,7 +300,7 @@ func ExampleTDClient_Import() {
 }
 
 func ExampleTDClient_SubmitQuery() {
-	jobId, err := client.SubmitQuery("sample_db2", td_client.Query{
+	jobId, err := client.SubmitQuery("sample_db2", Query{
 		Type:       "hive",
 		Query:      "SELECT COUNT(*) AS c FROM test WHERE a >= 5000",
 		ResultUrl:  "",

@@ -1,6 +1,8 @@
 Treasure Data API client for Go
 ===============================
 
+[![Build Status](https://travis-ci.org/treasure-data/td-client-go.svg?branch=master)](https://travis-ci.org/treasure-data/td-client-go)
+
 Synopsis
 --------
 
