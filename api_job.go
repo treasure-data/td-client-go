@@ -167,6 +167,14 @@ var submitJobSchema = map[string]interface{}{
 	"database": "",
 }
 
+var submitPartialDeleteJobSchema = map[string]interface{}{
+	"job_id":   0,
+	"database": "",
+	"table":    "",
+	"from":     0,
+	"to":       0,
+}
+
 func (client *TDClient) ListJobs() (*ListJobsResult, error) {
 	resp, err := client.get("/v3/job/list", nil)
 	if err != nil {
@@ -378,9 +386,9 @@ func (client *TDClient) SubmitPartialDeleteJob(db string, table string, to time.
 	if resp.StatusCode != 200 {
 		return "", client.buildError(resp, -1, "Partial delete failed", nil)
 	}
-	js, err := client.checkedJson(resp, submitJobSchema)
+	js, err := client.checkedJson(resp, submitPartialDeleteJobSchema)
 	if err != nil {
 		return "", err
 	}
-	return js["job_id"].(string), nil
+	return strconv.Itoa(js["job_id"].(int)), nil
 }
