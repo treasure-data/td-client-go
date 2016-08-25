@@ -521,20 +521,23 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 		_path = append(_path, '[')
 		h := len(_path)
 		_v := v.([]interface{})
-		if ev.Len() == 0 {
-			return nil, errors.New(fmt.Sprintf("invalid schema: %s must have at least one element", path))
-		}
-		eve := ev.Index(0)
 		rv := reflect.MakeSlice(expectedType, len(_v), len(_v))
-		for i, ve := range _v {
-			_path = _path[0:h]
-			_path = append(_path, strconv.Itoa(i)...)
-			_path = append(_path, ']')
-			rve, err := client.validateAndCoerceInner(string(_path), ve, eve)
-			if err != nil {
-				return nil, err
+		if ev.Len() == 0 {
+			for i, ve := range _v {
+				rv.Index(i).Set(reflect.ValueOf(ve))
 			}
-			rv.Index(i).Set(reflect.ValueOf(rve))
+		} else {
+			eve := ev.Index(0)
+			for i, ve := range _v {
+				_path = _path[0:h]
+				_path = append(_path, strconv.Itoa(i)...)
+				_path = append(_path, ']')
+				rve, err := client.validateAndCoerceInner(string(_path), ve, eve)
+				if err != nil {
+					return nil, err
+				}
+				rv.Index(i).Set(reflect.ValueOf(rve))
+			}
 		}
 		v = rv.Interface()
 	case reflect.Map:
