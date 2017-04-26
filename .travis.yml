@@ -9,5 +9,5 @@ before_install:
   - go get github.com/ugorji/go/codec
 
 script:
-# - go test -v ./...
+ - go test -v ./...
   - true
