@@ -53,7 +53,7 @@ var listScheduleSchema = map[string]interface{}{
 			"created_at":  time.Time{},
 			"type":        "",
 			"query":       "",
-			"database":    "",
+			"database":    Optional{"", "?"},
 			"user_name":   "",
 			"priority":    0,
 			"retry_limit": 0,
