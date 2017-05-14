@@ -2,6 +2,23 @@ package td_client
 
 import "testing"
 
+func TestShowTable(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(showTableResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+	table, err := client.ShowTable("test_database", "test_table")
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+	if table.Name != "test_table" {
+		t.Fatal("unexpected table name")
+	}
+	t.Log(table)
+}
+
 func TestListTables(t *testing.T) {
 	client, err := NewTDClient(Settings{
 		Transport: &DummyTransport{[]byte(listTablesResponse)},
@@ -89,6 +106,22 @@ func TestDeleteTable(t *testing.T) {
 }
 
 func TestTail(t *testing.T) {}
+
+const showTableResponse = `
+{
+   "id":999999,
+   "name":"test_table",
+   "estimated_storage_size":0,
+   "counter_updated_at":null,
+   "last_log_timestamp":null,
+   "created_at":"2017-05-14 12:19:37 UTC",
+   "updated_at":"2017-05-14 15:53:17 UTC",
+   "type":"log",
+   "count":0,
+   "schema":"[[\"col1\",\"string\"]]",
+   "expire_days":10
+}
+`
 
 const listTablesResponse = `
 {

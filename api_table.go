@@ -45,6 +45,22 @@ type ListTablesResultElement struct {
 	PrimaryKeyType       string
 }
 
+var showTableSchema = map[string]interface{}{
+	"id":                     0,
+	"name":                   "",
+	"type":                   Optional{"", "?"},
+	"count":                  Optional{0, 0},
+	"created_at":             time.Time{},
+	"updated_at":             time.Time{},
+	"counter_updated_at":     Optional{time.Time{}, time.Time{}},
+	"last_log_timestamp":     Optional{time.Time{}, time.Time{}},
+	"estimated_storage_size": 0,
+	"schema":                 Optional{EmbeddedJSON([]interface{}{}), nil},
+	"expire_days":            Optional{0, 0},
+	"primary_key":            Optional{"", ""},
+	"primary_key_type":       Optional{"", ""},
+}
+
 // ListTablesResult is a collection of ListTablesResultElement
 type ListTablesResult []ListTablesResultElement
 
@@ -73,6 +89,36 @@ var deleteTableSchema = map[string]interface{}{
 	"table":    "",
 	"database": "",
 	"type":     Optional{"", "?"},
+}
+
+func (client *TDClient) ShowTable(db, table string) (*ListTablesResultElement, error) {
+	resp, err := client.get(fmt.Sprintf("/v3/table/show/%s/%s", url.QueryEscape(db), url.QueryEscape(table)), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "Show table failed", nil)
+	}
+	js, err := client.checkedJson(resp, showTableSchema)
+	if err != nil {
+		return nil, err
+	}
+	return &ListTablesResultElement{
+		Id:                   js["id"].(int),
+		Name:                 js["name"].(string),
+		Type:                 js["type"].(string),
+		Count:                js["count"].(int),
+		CreatedAt:            js["created_at"].(time.Time),
+		UpdatedAt:            js["updated_at"].(time.Time),
+		LastImport:           js["counter_updated_at"].(time.Time),
+		LastLogTimestamp:     js["last_log_timestamp"].(time.Time),
+		EstimatedStorageSize: js["estimated_storage_size"].(int),
+		Schema:               js["schema"].([]interface{}),
+		ExpireDays:           js["expire_days"].(int),
+		PrimaryKey:           js["primary_key"].(string),
+		PrimaryKeyType:       js["primary_key_type"].(string),
+	}, nil
 }
 
 func (client *TDClient) ListTables(db string) (*ListTablesResult, error) {
