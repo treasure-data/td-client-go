@@ -38,6 +38,23 @@ func TestListUsers(t *testing.T) {
 	t.Log(userList)
 }
 
+func TestListAPIKeys(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(listAPIKeysResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+	apiKeys, err := client.ListAPIKeys("hogefuga@github.com")
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+	if len(apiKeys.APIKeys) != 2 {
+		t.Fatal("not expected apikeys count")
+	}
+	t.Log(apiKeys)
+}
+
 const listUsersResponse = `
 {
     "users": [
@@ -86,6 +103,15 @@ const listUsersResponse = `
             "organization": null,
             "roles": []
         }
+    ]
+}
+`
+
+const listAPIKeysResponse = `
+{
+    "apikeys": [
+        "0000/hogehogehogehogehogehogehogehogehogehoge",
+        "0000/fugafugafugafugafugafugafugafugafugafuga"
     ]
 }
 `

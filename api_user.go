@@ -18,7 +18,11 @@
 
 package td_client
 
-import "time"
+import (
+	"fmt"
+	"net/url"
+	"time"
+)
 
 // ListUsersResultElement represents an item of the result of ListUsers API
 type ListUsersResultElement struct {
@@ -60,6 +64,15 @@ var listUsersSchema = map[string]interface{}{
 	},
 }
 
+// ListAPIKeysResult represents the result of ListAPIKeys API
+type ListAPIKeysResult struct {
+	APIKeys []string
+}
+
+var listAPIKeysSchema = map[string]interface{}{
+	"apikeys": []string{},
+}
+
 func (client *TDClient) ListUsers() (*ListUsersResult, error) {
 	resp, err := client.get("/v3/user/list", nil)
 	if err != nil {
@@ -93,4 +106,23 @@ func (client *TDClient) ListUsers() (*ListUsersResult, error) {
 		}
 	}
 	return &retval, nil
+}
+
+func (client *TDClient) ListAPIKeys(email string) (*ListAPIKeysResult, error) {
+	resp, err := client.get(fmt.Sprintf("/v3/user/apikey/list/%s", url.QueryEscape(email)), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "List apikey failed", nil)
+	}
+	js, err := client.checkedJson(resp, listAPIKeysSchema)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ListAPIKeysResult{
+		APIKeys: js["apikeys"].([]string),
+	}, nil
 }
