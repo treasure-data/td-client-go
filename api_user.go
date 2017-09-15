@@ -142,3 +142,15 @@ func (client *TDClient) UserAdd(name, org, email, password string) error {
 	}
 	return nil
 }
+
+func (client *TDClient) RemoveUser(email string) error {
+	resp, err := client.post(fmt.Sprintf("/v3/user/remove/%s", url.QueryEscape(email)), nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return client.buildError(resp, -1, "add user failed", nil)
+	}
+	return nil
+}

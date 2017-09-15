@@ -68,6 +68,19 @@ func TestUserAdd(t *testing.T) {
 	}
 }
 
+func TestRemoveUser(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(removeUserResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+	err = client.RemoveUser("hogefuga@github.com")
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+}
+
 const listUsersResponse = `
 {
     "users": [
@@ -131,5 +144,10 @@ const listAPIKeysResponse = `
 const userAddResponse = `
 {
     "name":"Test User"
+}
+`
+const removeUserResponse = `
+{
+    "user":"hogefuga@github.com"
 }
 `
