@@ -127,7 +127,7 @@ func (client *TDClient) ListAPIKeys(email string) (*ListAPIKeysResult, error) {
 	}, nil
 }
 
-func (client *TDClient) UserAdd(name, org, email, password string) error {
+func (client *TDClient) AddUser(name, org, email, password string) error {
 	params := url.Values{}
 	params.Set("organization", org)
 	params.Set("email", email)
