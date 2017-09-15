@@ -126,3 +126,19 @@ func (client *TDClient) ListAPIKeys(email string) (*ListAPIKeysResult, error) {
 		APIKeys: js["apikeys"].([]string),
 	}, nil
 }
+
+func (client *TDClient) UserAdd(name, org, email, password string) error {
+	params := url.Values{}
+	params.Set("organization", org)
+	params.Set("email", email)
+	params.Set("password", password)
+	resp, err := client.post(fmt.Sprintf("/v3/user/add/%s", url.QueryEscape(name)), params)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return client.buildError(resp, -1, "add user failed", nil)
+	}
+	return nil
+}

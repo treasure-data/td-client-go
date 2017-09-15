@@ -55,6 +55,19 @@ func TestListAPIKeys(t *testing.T) {
 	t.Log(apiKeys)
 }
 
+func TestUserAdd(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(userAddResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+	err = client.UserAdd("Test User", "td", "hogefuga@github.com", "123456789")
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+}
+
 const listUsersResponse = `
 {
     "users": [
@@ -113,5 +126,10 @@ const listAPIKeysResponse = `
         "0000/hogehogehogehogehogehogehogehogehogehoge",
         "0000/fugafugafugafugafugafugafugafugafugafuga"
     ]
+}
+`
+const userAddResponse = `
+{
+    "name":"Test User"
 }
 `
