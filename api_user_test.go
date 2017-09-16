@@ -21,6 +21,20 @@ import (
 	"testing"
 )
 
+func TestAuthenticate(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(authenticateResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+	authenticate, err := client.Authenticate("hogefuga@github.com", "123456789")
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+	t.Log(authenticate)
+}
+
 func TestListUsers(t *testing.T) {
 	client, err := NewTDClient(Settings{
 		Transport: &DummyTransport{[]byte(listUsersResponse)},
@@ -80,6 +94,13 @@ func TestRemoveUser(t *testing.T) {
 		t.Fatalf("bad request: %s", err.Error())
 	}
 }
+
+const authenticateResponse = `
+{
+    "name": "Test User",
+    "apikey": "0000/hbfr73pix9abuciofzg8gig55cndl8clpwaz2akb"
+}
+`
 
 const listUsersResponse = `
 {

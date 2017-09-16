@@ -24,6 +24,17 @@ import (
 	"time"
 )
 
+// AuthenticateResult is result of authenticate API
+type AuthenticateResult struct {
+	Name   string
+	APIKey string
+}
+
+var authenticateSchema = map[string]interface{}{
+	"name":   "",
+	"apikey": "",
+}
+
 // ListUsersResultElement represents an item of the result of ListUsers API
 type ListUsersResultElement struct {
 	ID            int
@@ -71,6 +82,30 @@ type ListAPIKeysResult struct {
 
 var listAPIKeysSchema = map[string]interface{}{
 	"apikeys": []string{},
+}
+
+func (client *TDClient) Authenticate(email, password string) (*AuthenticateResult, error) {
+	params := url.Values{}
+	params.Set("user", email)
+	params.Set("password", password)
+	resp, err := client.post("/v3/user/authenticate", params)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 400 {
+		return nil, client.buildError(resp, AuthError, "Authentication failed", nil)
+	} else if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "Authentication failed", nil)
+	}
+	js, err := client.checkedJson(resp, authenticateSchema)
+	if err != nil {
+		return nil, err
+	}
+	return &AuthenticateResult{
+		Name:   js["name"].(string),
+		APIKey: js["apikey"].(string),
+	}, nil
 }
 
 func (client *TDClient) ListUsers() (*ListUsersResult, error) {
@@ -150,7 +185,7 @@ func (client *TDClient) RemoveUser(email string) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return client.buildError(resp, -1, "add user failed", nil)
+		return client.buildError(resp, -1, "remove user failed", nil)
 	}
 	return nil
 }
