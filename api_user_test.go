@@ -95,6 +95,20 @@ func TestRemoveUser(t *testing.T) {
 	}
 }
 
+func TestAddAPIKey(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(addAPIKeyResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+	apiKey, err := client.AddAPIKey("hogefuga@github.com")
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+	t.Log(apiKey)
+}
+
 const authenticateResponse = `
 {
     "name": "Test User",
@@ -170,5 +184,10 @@ const addUserResponse = `
 const removeUserResponse = `
 {
     "user":"hogefuga@github.com"
+}
+`
+const addAPIKeyResponse = `
+{
+    "apikey":"0000/hogehogehogehogehogehogehogehogehogehoge"
 }
 `

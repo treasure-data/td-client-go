@@ -84,6 +84,15 @@ var listAPIKeysSchema = map[string]interface{}{
 	"apikeys": []string{},
 }
 
+// AddAPIKeyResult represents the result of AddAPIKey API
+type AddAPIKeyResult struct {
+	APIKey string
+}
+
+var addAPIKeySchema = map[string]interface{}{
+	"apikey": "",
+}
+
 func (client *TDClient) Authenticate(email, password string) (*AuthenticateResult, error) {
 	params := url.Values{}
 	params.Set("user", email)
@@ -188,4 +197,22 @@ func (client *TDClient) RemoveUser(email string) error {
 		return client.buildError(resp, -1, "remove user failed", nil)
 	}
 	return nil
+}
+
+func (client *TDClient) AddAPIKey(email string) (*AddAPIKeyResult, error) {
+	resp, err := client.post(fmt.Sprintf("/v3/user/apikey/add/%s", url.QueryEscape(email)), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, client.buildError(resp, -1, "add apikey failed", nil)
+	}
+	js, err := client.checkedJson(resp, addAPIKeySchema)
+	if err != nil {
+		return nil, err
+	}
+	return &AddAPIKeyResult{
+		APIKey: js["apikey"].(string),
+	}, nil
 }
