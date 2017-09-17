@@ -102,9 +102,7 @@ func (client *TDClient) Authenticate(email, password string) (*AuthenticateResul
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode == 400 {
-		return nil, client.buildError(resp, AuthError, "Authentication failed", nil)
-	} else if resp.StatusCode != 200 {
+	if resp.StatusCode != 200 {
 		return nil, client.buildError(resp, -1, "Authentication failed", nil)
 	}
 	js, err := client.checkedJson(resp, authenticateSchema)
@@ -215,4 +213,18 @@ func (client *TDClient) AddAPIKey(email string) (*AddAPIKeyResult, error) {
 	return &AddAPIKeyResult{
 		APIKey: js["apikey"].(string),
 	}, nil
+}
+
+func (client *TDClient) RemoveAPIKey(email, apikey string) error {
+	params := url.Values{}
+	params.Set("apikey", apikey)
+	resp, err := client.post(fmt.Sprintf("/v3/user/apikey/remove/%s", url.QueryEscape(email)), params)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return client.buildError(resp, -1, "remove apikey failed", nil)
+	}
+	return nil
 }
