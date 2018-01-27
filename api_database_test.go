@@ -53,7 +53,8 @@ const listDatabasesResponse = `
          "updated_at":"2016-11-07 09:37:37 UTC",
          "count":69664,
          "organization":null,
-         "permission":"administrator"
+         "permission":"administrator",
+         "delete_protected": true
       },
       {
          "name":"sample_datasets",
@@ -61,7 +62,8 @@ const listDatabasesResponse = `
          "updated_at":"2016-04-21 06:31:45 UTC",
          "count":8812278,
          "organization":null,
-         "permission":"query_only"
+         "permission":"query_only",
+         "delete_protected": false
       },
       {
          "name":"information_schema",
@@ -69,7 +71,8 @@ const listDatabasesResponse = `
          "updated_at":"2016-12-15 05:24:21 UTC",
          "count":0,
          "organization":null,
-         "permission":"query_only"
+         "permission":"query_only",
+         "delete_protected": false
       }
    ]
 }
