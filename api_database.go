@@ -27,12 +27,13 @@ import (
 // ListDataBasesResultElement represents an item of the result of
 // ListDatabases API call
 type ListDataBasesResultElement struct {
-	Name         string
-	Organization string
-	Count        int
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	Permission   string
+	Name            string
+	Organization    string
+	Count           int
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	Permission      string
+	DeleteProtected bool
 }
 
 // ListDataBasesResult is a collection of ListDataBasesResultElement
@@ -41,12 +42,13 @@ type ListDataBasesResult []ListDataBasesResultElement
 var listDatabasesSchema = map[string]interface{}{
 	"databases": []map[string]interface{}{
 		map[string]interface{}{
-			"name":         "",
-			"organization": Optional{"", ""},
-			"count":        0,
-			"created_at":   time.Time{},
-			"updated_at":   time.Time{},
-			"permission":   "",
+			"name":             "",
+			"organization":     Optional{"", ""},
+			"count":            0,
+			"created_at":       time.Time{},
+			"updated_at":       time.Time{},
+			"permission":       "",
+			"delete_protected": false,
 		},
 	},
 }
@@ -68,12 +70,13 @@ func (client *TDClient) ListDatabases() (*ListDataBasesResult, error) {
 	retval := make(ListDataBasesResult, len(databases))
 	for i, v := range databases {
 		retval[i] = ListDataBasesResultElement{
-			Name:         v["name"].(string),
-			Organization: v["organization"].(string),
-			Count:        v["count"].(int),
-			CreatedAt:    v["created_at"].(time.Time),
-			UpdatedAt:    v["updated_at"].(time.Time),
-			Permission:   v["permission"].(string),
+			Name:            v["name"].(string),
+			Organization:    v["organization"].(string),
+			Count:           v["count"].(int),
+			CreatedAt:       v["created_at"].(time.Time),
+			UpdatedAt:       v["updated_at"].(time.Time),
+			Permission:      v["permission"].(string),
+			DeleteProtected: v["delete_protected"].(bool),
 		}
 	}
 	return &retval, nil
