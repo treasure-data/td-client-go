@@ -120,7 +120,8 @@ const showTableResponse = `
    "type":"log",
    "count":0,
    "schema":"[[\"col1\",\"string\"]]",
-   "expire_days":10
+   "expire_days":10,
+   "include_v":true
 }
 `
 
@@ -140,7 +141,8 @@ const listTablesResponse = `
          "type":"log",
          "count":1751,
          "schema":"[[\"id\",\"long\"],[\"fizz\",\"string\"],[\"buzz\",\"string\"],[\"fizzbuzz\",\"string\"],[\"created_at\",\"string\"],[\"created_by\",\"long\"],[\"updated_at\",\"string\"],[\"updated_by\",\"long\"],[\"deleted_at\",\"string\"],[\"deleted_by\",\"long\"]]",
-         "expire_days":null
+         "expire_days":null,
+	 "include_v":true
       },
       {
          "id":99999992,
@@ -154,7 +156,8 @@ const listTablesResponse = `
          "type":"log",
          "count":2539,
          "schema":"[[\"id\",\"long\"],[\"hogehoge\",\"string\"],[\"fugafuga\",\"long\"],[\"created_at\",\"string\"],[\"updated_at\",\"string\"],[\"created_by\",\"long\"],[\"updated_by\",\"long\"]]",
-         "expire_days":null
+         "expire_days":null,
+	 "include_v":true
       },
       {
          "id":99999993,
@@ -168,7 +171,8 @@ const listTablesResponse = `
          "type":"log",
          "count":76,
          "schema":"[[\"id\",\"long\"],[\"foo\",\"string\"],[\"var\",\"string\"],[\"created_at\",\"string\"],[\"created_by\",\"long\"],[\"updated_at\",\"string\"],[\"updated_by\",\"long\"],[\"deleted_at\",\"string\"],[\"deleted_by\",\"long\"]]",
-         "expire_days":null
+         "expire_days":null,
+	 "include_v":true
       }
    ]
 }
