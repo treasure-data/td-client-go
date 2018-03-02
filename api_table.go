@@ -60,6 +60,7 @@ var showTableSchema = map[string]interface{}{
 	"expire_days":            Optional{0, 0},
 	"primary_key":            Optional{"", ""},
 	"primary_key_type":       Optional{"", ""},
+	"include_v":              false,
 }
 
 // ListTablesResult is a collection of ListTablesResultElement
@@ -83,6 +84,7 @@ var listTablesSchema = map[string]interface{}{
 			"expire_days":            Optional{0, 0},
 			"primary_key":            Optional{"", ""},
 			"primary_key_type":       Optional{"", ""},
+			"include_v":              false,
 		},
 	},
 }
