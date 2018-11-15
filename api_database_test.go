@@ -2,6 +2,33 @@ package td_client
 
 import "testing"
 
+func TestShowDatabase(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(listDatabasesResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+
+	// db found
+	database, err := client.ShowDatabase("sample_datasets")
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+	if database.Name != "sample_datasets" {
+		t.Fatalf("database name mismatch: %s", database.Name)
+	}
+
+	// db not found
+	database, err = client.ShowDatabase("not_found_db")
+	if err == nil {
+		t.Fatal("err expected")
+	}
+	if err.Error() != "Database 'not_found_db' does not exist" {
+		t.Fatalf("unexpected err message: %s", err.Error())
+	}
+}
+
 func TestListDatabases(t *testing.T) {
 	client, err := NewTDClient(Settings{
 		Transport: &DummyTransport{[]byte(listDatabasesResponse)},
