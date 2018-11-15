@@ -53,6 +53,21 @@ var listDatabasesSchema = map[string]interface{}{
 	},
 }
 
+func (client *TDClient) ShowDatabase(dbname string) (*ListDataBasesResultElement, error) {
+	result, err := client.ListDatabases()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, db := range *result {
+		if db.Name == dbname {
+			return &db, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Database '%s' does not exist", dbname)
+}
+
 func (client *TDClient) ListDatabases() (*ListDataBasesResult, error) {
 	resp, err := client.get("/v3/database/list", nil)
 	if err != nil {
