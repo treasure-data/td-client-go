@@ -43,6 +43,7 @@ type ListTablesResultElement struct {
 	ExpireDays           int
 	PrimaryKey           string
 	PrimaryKeyType       string
+	IncludeV             bool
 }
 
 var showTableSchema = map[string]interface{}{
@@ -122,6 +123,7 @@ func (client *TDClient) ShowTable(db, table string) (*ListTablesResultElement, e
 		ExpireDays:           js["expire_days"].(int),
 		PrimaryKey:           js["primary_key"].(string),
 		PrimaryKeyType:       js["primary_key_type"].(string),
+		IncludeV:             js["include_v"].(bool),
 	}, nil
 }
 
@@ -155,6 +157,7 @@ func (client *TDClient) ListTables(db string) (*ListTablesResult, error) {
 			ExpireDays:           v["expire_days"].(int),
 			PrimaryKey:           v["primary_key"].(string),
 			PrimaryKeyType:       v["primary_key_type"].(string),
+			IncludeV:             v["include_v"].(bool),
 		}
 	}
 	return &retval, nil
