@@ -62,6 +62,19 @@ func TestSwapTable(t *testing.T) {
 
 }
 
+func TestUpdateTable(t *testing.T) {
+	client, err := NewTDClient(Settings{
+		Transport: &DummyTransport{[]byte(updateTableResponse)},
+	})
+	if err != nil {
+		t.Fatalf("failed create client: %s", err.Error())
+	}
+	err = client.UpdateTable("test_database", "test_table", make(map[string]string))
+	if err != nil {
+		t.Fatalf("bad request: %s", err.Error())
+	}
+}
+
 func TestUpdateSchema(t *testing.T) {
 	client, err := NewTDClient(Settings{
 		Transport: &DummyTransport{[]byte(updateSchemaResponse)},
@@ -208,6 +221,14 @@ const updateSchemaResponse = `
 }
 `
 const updateExpireResponse = `
+{
+	"table":"test_table",
+	"type":"log",
+	"database":"test_database"
+}
+`
+
+const updateTableResponse = `
 {
 	"table":"test_table",
 	"type":"log",

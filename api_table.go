@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/url"
 	"strconv"
 	"time"
@@ -187,6 +188,22 @@ func (client *TDClient) SwapTable(db string, table1 string, table2 string) error
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return client.buildError(resp, -1, "Swap tables failed", nil)
+	}
+	return nil
+}
+
+func (client *TDClient) UpdateTable(db string, table string, params map[string]string) error {
+	resp, err := client.post(fmt.Sprintf("/v3/table/update/%s/%s", url.QueryEscape(db), url.QueryEscape(table)), dictToValues(params))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
+	}()
+
+	if resp.StatusCode != 200 {
+		return client.buildError(resp, -1, "Update table failed", nil)
 	}
 	return nil
 }
