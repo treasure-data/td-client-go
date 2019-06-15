@@ -50,8 +50,8 @@ type ListJobsResultElements []ListJobsResultElement
 type ListJobsResult struct {
 	ListJobsResultElements ListJobsResultElements
 	Count                  int
-	From                   float64
-	To                     float64
+	From                   int
+	To                     int
 }
 
 var listJobsSchema = map[string]interface{}{
@@ -82,8 +82,8 @@ var listJobsSchema = map[string]interface{}{
 		},
 	},
 	"count": Optional{0, 0},
-	"to":    Optional{0., 0.},
-	"from":  Optional{0., 0.},
+	"to":    Optional{0, 0},
+	"from":  Optional{0, 0},
 }
 
 var jobStatusSchema = map[string]interface{}{
@@ -254,8 +254,8 @@ func (client *TDClient) ListJobsWithOptions(options *ListJobsOptions) (*ListJobs
 	}
 	listJobsResult.ListJobsResultElements = retval
 	listJobsResult.Count = js["count"].(int)
-	listJobsResult.From = js["from"].(float64)
-	listJobsResult.To = js["to"].(float64)
+	listJobsResult.From = js["from"].(int)
+	listJobsResult.To = js["to"].(int)
 	return &listJobsResult, nil
 }
 
