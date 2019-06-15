@@ -50,8 +50,8 @@ type ListJobsResultElements []ListJobsResultElement
 type ListJobsResult struct {
 	ListJobsResultElements ListJobsResultElements
 	Count                  int
-	From                   string
-	To                     string
+	From                   int
+	To                     int
 }
 
 var listJobsSchema = map[string]interface{}{
@@ -82,8 +82,8 @@ var listJobsSchema = map[string]interface{}{
 		},
 	},
 	"count": Optional{0, 0},
-	"to":    Optional{"", "?"},
-	"from":  Optional{"", "?"},
+	"to":    Optional{0, 0},
+	"from":  Optional{0, 0},
 }
 
 var jobStatusSchema = map[string]interface{}{
@@ -179,8 +179,48 @@ var submitPartialDeleteJobSchema = map[string]interface{}{
 	"to":       0,
 }
 
-func (client *TDClient) ListJobs() (*ListJobsResult, error) {
-	resp, err := client.get("/v3/job/list", nil)
+type ListJobsOptions struct {
+	from   string
+	to     string
+	status string
+}
+
+func (options *ListJobsOptions) WithFrom(from int) *ListJobsOptions {
+	options.from = strconv.Itoa(from)
+	return options
+}
+
+func (options *ListJobsOptions) WithTo(to int) *ListJobsOptions {
+	options.to = strconv.Itoa(to)
+	return options
+}
+
+func (options *ListJobsOptions) WithStatus(status string) *ListJobsOptions {
+	if status == "running" || status == "queued" || status == "success" || status == "error" {
+		options.status = status
+	}
+	return options
+}
+
+func (client *TDClient) ListJobsWithOptions(options *ListJobsOptions) (*ListJobsResult, error) {
+	requestUri := "/v3/job/list"
+	u, err := url.Parse(requestUri)
+	if err != nil {
+		return nil, err
+	}
+
+	queryString := u.Query()
+	if options.from != "" {
+		queryString.Set("from", options.from)
+	}
+	if options.to != "" {
+		queryString.Set("to", options.to)
+	}
+	if options.status != "" {
+		queryString.Set("status", options.status)
+	}
+
+	resp, err := client.get(requestUri, queryString)
 	if err != nil {
 		return nil, err
 	}
@@ -214,9 +254,13 @@ func (client *TDClient) ListJobs() (*ListJobsResult, error) {
 	}
 	listJobsResult.ListJobsResultElements = retval
 	listJobsResult.Count = js["count"].(int)
-	listJobsResult.From = js["from"].(string)
-	listJobsResult.To = js["to"].(string)
+	listJobsResult.From = js["from"].(int)
+	listJobsResult.To = js["to"].(int)
 	return &listJobsResult, nil
+}
+
+func (client *TDClient) ListJobs() (*ListJobsResult, error) {
+	return client.ListJobsWithOptions(&ListJobsOptions{})
 }
 
 func (client *TDClient) ShowJob(jobId string) (*ShowJobResult, error) {
