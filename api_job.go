@@ -197,7 +197,7 @@ func (options *ListJobsOptions) WithTo(to int) *ListJobsOptions {
 
 func (options *ListJobsOptions) WithStatus(status string) *ListJobsOptions {
 	if status == "running" || status == "queued" || status == "success" || status == "error" {
-     	options.status = status
+		options.status = status
 	}
 	return options
 }
