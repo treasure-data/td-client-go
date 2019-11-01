@@ -10,8 +10,14 @@ go:
   - 1.13
   - tip
 before_install:
-  - go get github.com/ugorji/go/codec
+  - |
+    if expr $TRAVIS_GO_VERSION : 1\.11 > /dev/null; then
+      echo "Remove go.sum in order to avoid checksum mismatch go 1.11. Go changed how to calculate checksum."
+      rm go.sum go.mod
+    fi
 
 script:
- - go test -v ./...
-  - true
+  - go test -v ./...
+
+env:
+  - GO111MODULE=on
