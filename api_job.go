@@ -158,11 +158,12 @@ var showJobSchema = map[string]interface{}{
 }
 
 type Query struct {
-	Type       string
-	Query      string
-	ResultUrl  string
-	Priority   int
-	RetryLimit int
+	Type          string
+	Query         string
+	ResultUrl     string
+	Priority      int
+	RetryLimit    int
+	EngineVersion string
 }
 
 var submitJobSchema = map[string]interface{}{
@@ -384,6 +385,9 @@ func (client *TDClient) SubmitQuery(db string, q Query) (string, error) {
 	}
 	if q.RetryLimit >= 0 {
 		params.Set("retry_limit", strconv.Itoa(q.RetryLimit))
+	}
+	if q.EngineVersion != "" {
+		params.Set("engine_version", q.EngineVersion)
 	}
 	resp, err := client.post(fmt.Sprintf("/v3/job/issue/%s/%s", url.QueryEscape(q.Type), url.QueryEscape(db)), params)
 	if err != nil {
