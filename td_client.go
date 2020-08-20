@@ -230,10 +230,7 @@ func EmbeddedJSON(expectedTypeProto interface{}) ConverterFunc {
 
 func (client *TDClient) buildUrl(requestUri string, params url.Values) *url.URL {
 	endpoint := client.router.Route(requestUri)
-	scheme := "http"
-	if client.ssl {
-		scheme = "https"
-	}
+	scheme := "https"
 	host := endpoint
 	if client.port != 0 {
 		host = host + ":" + strconv.Itoa(client.port)
