@@ -703,6 +703,10 @@ func NewTDClient(settings Settings) (*TDClient, error) {
 	if settings.UserAgent != "" {
 		userAgent += "; " + settings.UserAgent
 	}
+	if !settings.Ssl {
+		docUrl := "https://tddocs.atlassian.net/wiki/spaces/PD/pages/476545373/August+2020+Release+Note#Sunsetting-HTTP-Support"
+		fmt.Println("Warn: This request uses HTTPS endpoints even if `Ssl` option is not set.\n See: ", docUrl)
+	}
 	return &TDClient{
 		apiKey:            settings.ApiKey,
 		userAgent:         userAgent,
