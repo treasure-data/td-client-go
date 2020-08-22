@@ -8,7 +8,7 @@ import (
 	"os"
 	"strconv"
 	"time"
-	td_client "treasure-data.com/td-client/td-client"
+	td_client "github.com/treasure-data/td-client-go"
 )
 
 type Conf struct {
