@@ -117,7 +117,6 @@ type Settings struct {
 	ConnectionTimeout time.Duration     // (Optional) Connection timeout
 	ReadTimeout       time.Duration     // (Optional) Read timeout.
 	SendTimeout       time.Duration     // (Optional) Send timeout.
-	Ssl               bool              // (Optional) Whether to use the secure connection.
 	RootCAs           *x509.CertPool    // (Optional) Specify the CA certificates.
 	Port              int               // (Optional) Port number.
 	Proxy             interface{}       // (Optional) HTTP proxy to use.
@@ -703,15 +702,10 @@ func NewTDClient(settings Settings) (*TDClient, error) {
 	if settings.UserAgent != "" {
 		userAgent += "; " + settings.UserAgent
 	}
-	if !settings.Ssl {
-		docUrl := "https://tddocs.atlassian.net/wiki/spaces/PD/pages/476545373/August+2020+Release+Note#Sunsetting-HTTP-Support"
-		fmt.Println("Warn: This request uses HTTPS endpoints even if `Ssl` option is not set.\n See: ", docUrl)
-	}
 	return &TDClient{
 		apiKey:            settings.ApiKey,
 		userAgent:         userAgent,
 		router:            router,
-		ssl:               settings.Ssl,
 		rootCAs:           settings.RootCAs,
 		port:              settings.Port,
 		connectionTimeout: settings.ConnectionTimeout,
