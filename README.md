@@ -3,6 +3,17 @@ Treasure Data API client for Go
 
 [![Build Status](https://travis-ci.org/treasure-data/td-client-go.svg?branch=master)](https://travis-ci.org/treasure-data/td-client-go)
 
+Build
+-----
+- make
+-- To build all the code and run all the tests
+- make test-verbose
+-- To run tests verbosely
+- make help
+-- description of targets
+- make clean
+-- To cleanup locally
+
 Synopsis
 --------
 
