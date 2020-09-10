@@ -110,6 +110,9 @@ type EndpointRouter interface {
 // Proxy can take three kinds of values: *url.URL (parsed URL), func(*http.Request)(*url.URL, error), string (URL) or nil (the direct connection to the endpoint is possible).
 //
 // Transport allows you to take more control over the communication.
+//
+// `Ssl` option was removed from client options.
+// td-client-go no longer support `Ssl` option since Treasure Data permitts only HTTP access after September 1, 2020.
 type Settings struct {
 	ApiKey            string            // Treasure Data Account API key
 	UserAgent         string            // (Optional) Name that will appear as the User-Agent HTTP header
