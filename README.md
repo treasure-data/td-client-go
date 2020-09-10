@@ -5,14 +5,14 @@ Treasure Data API client for Go
 
 Build
 -----
-- make
--- To build all the code and run all the tests
-- make test-verbose
--- To run tests verbosely
-- make help
--- description of targets
-- make clean
--- To cleanup locally
+* make
+  * To build code and run all the tests
+* make test-verbose
+  * To run tests verbosely
+* make help
+  * To describe targets
+* make clean
+  * To cleanup locally
 
 Synopsis
 --------
