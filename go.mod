@@ -1,4 +1,4 @@
-module td-client-go
+module github.com/treasure-data/td-client-go
 
 go 1.15
 
