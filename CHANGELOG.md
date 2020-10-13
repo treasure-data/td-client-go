@@ -1,6 +1,10 @@
 Version History
 ===============
 
+v0.1.1
+------
+* Fix go.mod's module path. (#37)
+
 v0.1.0
 ------
 
