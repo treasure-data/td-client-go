@@ -55,7 +55,7 @@ const (
 )
 
 const (
-	CLIENT_VERSION = "0.0.0"
+	CLIENT_VERSION = "0.2.0"
 )
 
 const (
