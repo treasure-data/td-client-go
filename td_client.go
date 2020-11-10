@@ -110,6 +110,9 @@ type EndpointRouter interface {
 // Proxy can take three kinds of values: *url.URL (parsed URL), func(*http.Request)(*url.URL, error), string (URL) or nil (the direct connection to the endpoint is possible).
 //
 // Transport allows you to take more control over the communication.
+//
+// `Ssl` option was removed from client options.
+// td-client-go no longer support `Ssl` option since Treasure Data permits only HTTPS access after September 1, 2020.
 type Settings struct {
 	ApiKey            string            // Treasure Data Account API key
 	UserAgent         string            // (Optional) Name that will appear as the User-Agent HTTP header
@@ -117,7 +120,6 @@ type Settings struct {
 	ConnectionTimeout time.Duration     // (Optional) Connection timeout
 	ReadTimeout       time.Duration     // (Optional) Read timeout.
 	SendTimeout       time.Duration     // (Optional) Send timeout.
-	Ssl               bool              // (Optional) Whether to use the secure connection.
 	RootCAs           *x509.CertPool    // (Optional) Specify the CA certificates.
 	Port              int               // (Optional) Port number.
 	Proxy             interface{}       // (Optional) HTTP proxy to use.
@@ -230,10 +232,7 @@ func EmbeddedJSON(expectedTypeProto interface{}) ConverterFunc {
 
 func (client *TDClient) buildUrl(requestUri string, params url.Values) *url.URL {
 	endpoint := client.router.Route(requestUri)
-	scheme := "http"
-	if client.ssl {
-		scheme = "https"
-	}
+	scheme := "https"
 	host := endpoint
 	if client.port != 0 {
 		host = host + ":" + strconv.Itoa(client.port)
@@ -710,7 +709,6 @@ func NewTDClient(settings Settings) (*TDClient, error) {
 		apiKey:            settings.ApiKey,
 		userAgent:         userAgent,
 		router:            router,
-		ssl:               settings.Ssl,
 		rootCAs:           settings.RootCAs,
 		port:              settings.Port,
 		connectionTimeout: settings.ConnectionTimeout,
