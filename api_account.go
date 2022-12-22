@@ -19,7 +19,6 @@
 package td_client
 
 import (
-	"net/url"
 	"time"
 )
 
@@ -33,14 +32,6 @@ type ShowAccountResult struct {
 	CreatedAt       time.Time
 }
 
-// AccountCoreUtilizationResult stores the result of `AccountCoreUtiizationResult` API call
-type AccountCoreUtilizationResult struct {
-	From     time.Time
-	To       time.Time
-	Interval int
-	History  []interface{}
-}
-
 var showAccountSchema = map[string]interface{}{
 	"account": map[string]interface{}{
 		"id":               0,
@@ -50,15 +41,6 @@ var showAccountSchema = map[string]interface{}{
 		"maximum_cores":    0,
 		"created_at":       time.Time{},
 		"presto_plan":      0.,
-	},
-}
-
-var accountCoreUtilizationSchema = map[string]interface{}{
-	"from": map[string]interface{}{
-		"from":     time.Time{},
-		"to":       time.Time{},
-		"interval": 0,
-		"history":  []interface{}{},
 	},
 }
 
@@ -84,35 +66,5 @@ func (client *TDClient) ShowAccount() (*ShowAccountResult, error) {
 		GuaranteedCores: a["guaranteed_cores"].(int),
 		MaximumCores:    a["maximum_cores"].(int),
 		CreatedAt:       a["created_at"].(time.Time),
-	}, nil
-}
-
-// AccountCoreUtilization returns the utilization statistics of the current
-// account
-func (client *TDClient) AccountCoreUtilization(from time.Time, to time.Time) (*AccountCoreUtilizationResult, error) {
-	params := url.Values{}
-	if !from.IsZero() {
-		params.Set("from", from.UTC().Format(TDAPIDateTime))
-	}
-	if !to.IsZero() {
-		params.Set("to", to.UTC().Format(TDAPIDateTime))
-	}
-	resp, err := client.get("/v3/account/core_utilization", params)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		return nil, client.buildError(resp, -1, "Core utilization failed", nil)
-	}
-	js, err := client.checkedJson(resp, accountCoreUtilizationSchema)
-	if err != nil {
-		return nil, err
-	}
-	return &AccountCoreUtilizationResult{
-		From:     js["from"].(time.Time),
-		To:       js["to"].(time.Time),
-		Interval: js["interval"].(int),
-		History:  js["history"].([]interface{}),
 	}, nil
 }
