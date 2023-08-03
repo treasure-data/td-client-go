@@ -147,7 +147,7 @@ func TestUnfreezeBulkImport(t *testing.T) {
 
 func TestPerformBulkImport(t *testing.T) {
 	client, err := NewTDClient(Settings{
-		Transport: &DummyTransport{[]byte(`{"name":"test_bulk_import_name","bulk_import":"test_bulk_import_name", "job_id": 11111}`)},
+		Transport: &DummyTransport{[]byte(`{"name":"test_bulk_import_name","bulk_import":"test_bulk_import_name", "job_id": 11111111111}`)},
 	})
 	if err != nil {
 		t.Fatalf("failed create client: %s", err.Error())
@@ -155,6 +155,9 @@ func TestPerformBulkImport(t *testing.T) {
 	performResult, err := client.PerformBulkImport("test_bulk_import_name", nil)
 	if err != nil {
 		t.Fatalf("bad request: %s", err.Error())
+	}
+	if performResult.JobID != "11111111111" {
+		t.Fatalf("want job ID 11111111111, got %q", performResult.JobID)
 	}
 	t.Logf("%+v", performResult)
 }
