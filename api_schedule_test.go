@@ -91,7 +91,7 @@ func TestUpdateSchedule(t *testing.T) {
 
 func TestRunSchedule(t *testing.T) {
 	client, err := NewTDClient(Settings{
-		Transport: &DummyTransport{[]byte(`{"jobs":[{"job_id":111111,"type":"presto","scheduled_at":"2017-04-26 11:57:00 UTC"}]}`)},
+		Transport: &DummyTransport{[]byte(`{"jobs":[{"job_id":11111111111,"type":"presto","scheduled_at":"2017-04-26 11:57:00 UTC"}]}`)},
 	})
 	if err != nil {
 		t.Fatalf("failed create client: %s", err.Error())
@@ -102,16 +102,12 @@ func TestRunSchedule(t *testing.T) {
 	if err != nil {
 		t.Fatalf("bad request: %s", err.Error())
 	}
-	for _, runResult := range *runResultList {
-		for {
-			jobStatus, _ := client.JobStatus(runResult.ID)
-			if jobStatus == "success" || jobStatus != "killed" {
-				break
-			} else if jobStatus != "error" {
-				t.Fatalf("failed run status %s", jobStatus)
-			}
-			time.Sleep(10000)
-		}
+	if len(*runResultList) != 1 {
+		t.Fatalf("want 1 job, got %d", len(*runResultList))
+	}
+	runResult := (*runResultList)[0]
+	if runResult.ID != "11111111111" {
+		t.Fatalf("want job ID 11111111111, got %q", runResult.ID)
 	}
 	t.Logf("TestRunSchedule: %+v", runResultList)
 }

@@ -100,7 +100,7 @@ type PerformBulkImportResult struct {
 var performBulkImportResultSchema = map[string]interface{}{
 	"name":        "",
 	"bulk_import": "",
-	"job_id":      0,
+	"job_id":      int64(0),
 }
 
 func (client *TDClient) CreateBulkImport(name string, db string, table string, options map[string]string) (*BulkImportResult, error) {
@@ -308,7 +308,7 @@ func (client *TDClient) PerformBulkImport(name string, options map[string]string
 	return &PerformBulkImportResult{
 		Name:       js["name"].(string),
 		BulkImport: js["bulk_import"].(string),
-		JobID:      strconv.Itoa(js["job_id"].(int)),
+		JobID:      strconv.FormatInt(js["job_id"].(int64), 10),
 	}, nil
 }
 

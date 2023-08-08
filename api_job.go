@@ -173,7 +173,7 @@ var submitJobSchema = map[string]interface{}{
 }
 
 var submitPartialDeleteJobSchema = map[string]interface{}{
-	"job_id":   0,
+	"job_id":   int64(0),
 	"database": "",
 	"table":    "",
 	"from":     0,
@@ -442,5 +442,5 @@ func (client *TDClient) SubmitPartialDeleteJob(db string, table string, to time.
 	if err != nil {
 		return "", err
 	}
-	return strconv.Itoa(js["job_id"].(int)), nil
+	return strconv.FormatInt(js["job_id"].(int64), 10), nil
 }

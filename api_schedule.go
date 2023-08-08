@@ -132,7 +132,7 @@ type RunScheduleResult struct {
 var runScheduleResultSchema = map[string]interface{}{
 	"jobs": []map[string]interface{}{
 		{
-			"job_id":       0,
+			"job_id":       int64(0),
 			"scheduled_at": Optional{time.Time{}, time.Time{}},
 			"type":         "",
 		},
@@ -346,7 +346,7 @@ func (client *TDClient) RunSchedule(scheduleName string, runTime string, options
 	runResultList := make(RunScheduleResultList, len(jobs))
 	for i, v := range jobs {
 		runResultList[i] = RunScheduleResult{
-			ID:          strconv.Itoa(v["job_id"].(int)),
+			ID:          strconv.FormatInt(v["job_id"].(int64), 10),
 			Type:        v["type"].(string),
 			ScheduledAt: v["scheduled_at"].(time.Time),
 		}
