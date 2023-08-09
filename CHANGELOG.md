@@ -1,6 +1,11 @@
 Version History
 ===============
 
+v0.3.0
+------
+* Remove v3 core utilization api. (#43)
+* Use int64 instead of int for job_id field in API response. (#46)
+
 v0.2.0
 ------
 * Use HTTPS to default; it removes `Ssl` option. (#32)
