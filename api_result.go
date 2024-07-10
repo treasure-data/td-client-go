@@ -24,18 +24,22 @@ import (
 )
 
 type ListResultsResultElement struct {
-	Name string
-	Url  string
+	Id     int
+	UserId int
+	Name   string
+	Url    string
 }
 
 type ListResultsResult []ListResultsResultElement
 
 var listResultsSchema = map[string]interface{}{
-	"results": []map[string]string{
+	"results": []map[string]interface{}{
 		{
 			"name":         "",
-			"organization": "",
+			"organization": Optional{"", nil},
 			"url":          "",
+			"id":           Optional{0, 0},
+			"user_id":      Optional{0, 0},
 		},
 	},
 }
@@ -53,12 +57,14 @@ func (client *TDClient) ListResults() (*ListResultsResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	results := js["results"].([]map[string]string)
+	results := js["results"].([]map[string]interface{})
 	retval := make(ListResultsResult, len(results))
 	for i, v := range results {
 		retval[i] = ListResultsResultElement{
-			Name: v["name"],
-			Url:  v["url"],
+			Id:     v["id"].(int),
+			UserId: v["user_id"].(int),
+			Name:   v["name"].(string),
+			Url:    v["url"].(string),
 		}
 	}
 	return &retval, nil
