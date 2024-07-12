@@ -123,6 +123,8 @@ func TestTail(t *testing.T) {}
 const showTableResponse = `
 {
    "id":999999,
+   "user_id": 1,
+   "description": "blah",
    "name":"test_table",
    "estimated_storage_size":0,
    "counter_updated_at":null,
@@ -144,6 +146,8 @@ const listTablesResponse = `
    "tables":[
       {
          "id":99999991,
+         "user_id": 1,
+         "description": "blah",
          "name":"test_table_1",
          "estimated_storage_size":67158,
          "counter_updated_at":"2017-05-13T11:39:53Z",
@@ -159,6 +163,7 @@ const listTablesResponse = `
       },
       {
          "id":99999992,
+         "user_id": 1,
          "name":"test_table_2",
          "estimated_storage_size":84251,
          "counter_updated_at":"2017-05-13T11:39:53Z",
@@ -174,6 +179,8 @@ const listTablesResponse = `
       },
       {
          "id":99999993,
+         "user_id": 1,
+         "description": "blah",
          "name":"test_table_3",
          "estimated_storage_size":1609,
          "counter_updated_at":"2017-05-13T11:39:53Z",
