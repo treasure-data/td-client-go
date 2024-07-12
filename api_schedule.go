@@ -26,19 +26,22 @@ import (
 )
 
 type ScheduleElement struct {
-	Name       string
-	Cron       string
-	Type       string
-	Query      string
-	Timezone   string
-	Delay      int
-	Database   string
-	UserName   string
-	Priority   int
-	RetryLimit int
-	Result     string
-	NextTime   string
-	CreatedAt  time.Time
+	Id              int
+	ExecutingUserId int
+	Description     string
+	Name            string
+	Cron            string
+	Type            string
+	Query           string
+	Timezone        string
+	Delay           int
+	Database        string
+	UserName        string
+	Priority        int
+	RetryLimit      int
+	Result          string
+	NextTime        string
+	CreatedAt       time.Time
 }
 
 type ListScheduleResult []ScheduleElement
@@ -46,34 +49,37 @@ type ListScheduleResult []ScheduleElement
 var listScheduleSchema = map[string]interface{}{
 	"schedules": []map[string]interface{}{
 		{
-			"name":        "",
-			"cron":        Optional{"", "?"},
-			"timezone":    "",
-			"delay":       0,
-			"created_at":  time.Time{},
-			"type":        "",
-			"query":       "",
-			"database":    Optional{"", "?"},
-			"user_name":   "",
-			"priority":    0,
-			"retry_limit": 0,
-			"result":      Optional{"", "?"},
-			"next_time":   Optional{"", "?"},
+			"id":                0,
+			"executing_user_id": 0,
+			"description":       Optional{"", nil},
+			"name":              Optional{"", nil},
+			"cron":              Optional{"", "?"},
+			"timezone":          "",
+			"delay":             0,
+			"created_at":        time.Time{},
+			"type":              "",
+			"query":             Optional{"", nil},
+			"database":          Optional{"", "?"},
+			"user_name":         Optional{"", nil},
+			"priority":          0,
+			"retry_limit":       0,
+			"result":            Optional{"", "?"},
+			"next_time":         Optional{"", "?"},
 		},
 	},
 }
 
 var scheduleResultSchema = map[string]interface{}{
 	"id":          0,
-	"name":        "",
+	"name":        Optional{"", nil},
 	"cron":        Optional{"", "?"},
 	"timezone":    "",
 	"delay":       0,
 	"created_at":  time.Time{},
 	"type":        "",
-	"query":       "",
-	"database":    "",
-	"user_name":   "",
+	"query":       Optional{"", nil},
+	"database":    Optional{"", "?"},
+	"user_name":   Optional{"", nil},
 	"priority":    0,
 	"retry_limit": 0,
 	"result":      Optional{"", "?"},
@@ -220,19 +226,22 @@ func (client *TDClient) ListSchedules() (*ListScheduleResult, error) {
 	listScheduleResult := make(ListScheduleResult, len(schedules))
 	for i, v := range schedules {
 		listScheduleResult[i] = ScheduleElement{
-			Name:       v["name"].(string),
-			Cron:       v["cron"].(string),
-			Type:       v["type"].(string),
-			Query:      v["query"].(string),
-			Timezone:   v["timezone"].(string),
-			Delay:      v["delay"].(int),
-			Database:   v["database"].(string),
-			UserName:   v["user_name"].(string),
-			Priority:   v["priority"].(int),
-			RetryLimit: v["retry_limit"].(int),
-			Result:     v["result"].(string),
-			NextTime:   v["next_time"].(string),
-			CreatedAt:  v["created_at"].(time.Time),
+			Id:              v["id"].(int),
+			ExecutingUserId: v["executing_user_id"].(int),
+			Description:     v["description"].(string),
+			Name:            v["name"].(string),
+			Cron:            v["cron"].(string),
+			Type:            v["type"].(string),
+			Query:           v["query"].(string),
+			Timezone:        v["timezone"].(string),
+			Delay:           v["delay"].(int),
+			Database:        v["database"].(string),
+			UserName:        v["user_name"].(string),
+			Priority:        v["priority"].(int),
+			RetryLimit:      v["retry_limit"].(int),
+			Result:          v["result"].(string),
+			NextTime:        v["next_time"].(string),
+			CreatedAt:       v["created_at"].(time.Time),
 		}
 	}
 	return &listScheduleResult, nil
