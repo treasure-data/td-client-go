@@ -1,0 +1,10 @@
+---
+version: "2"
+
+linters:
+  disable:
+    - errcheck
+    - staticcheck
+    - unused
+
+# see: https://golangci-lint.run/usage/configuration/
