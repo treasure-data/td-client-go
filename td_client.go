@@ -220,7 +220,7 @@ func EmbeddedJSON(expectedTypeProto interface{}) ConverterFunc {
 		case reflect.Slice:
 			retval = reflect.MakeSlice(expectedType, 0, 0).Interface()
 		default:
-			return nil, errors.New(fmt.Sprintf("Unexpected prototype: %s", expectedType.String()))
+			return nil, fmt.Errorf("Unexpected prototype: %s", expectedType.String())
 		}
 		err := json.Unmarshal([]byte(jsStr), &retval)
 		if err != nil {
@@ -347,7 +347,7 @@ func (client *TDClient) buildError(resp *http.Response, type_ int, message strin
 			var _m interface{}
 			_m, ok := js["errorMessage"]
 			if !ok {
-				_m, _ = js["error"]
+				_m = js["error"]
 			}
 			if _m != nil {
 				m, _ = _m.(string)
@@ -358,19 +358,20 @@ func (client *TDClient) buildError(resp *http.Response, type_ int, message strin
 		errorMessage = string(body)
 	}
 	if type_ < 0 {
-		if statusCode == 404 {
+		switch statusCode {
+		case 404:
 			type_ = NotFoundError
 			message = fmt.Sprintf("%s: %s", message, errorMessage)
-		} else if statusCode == 409 {
+		case 409:
 			type_ = AlreadyExistsError
 			message = fmt.Sprintf("%s: %s", message, errorMessage)
-		} else if statusCode == 401 {
+		case 401:
 			type_ = AuthError
 			message = fmt.Sprintf("%s: %s", message, errorMessage)
-		} else if statusCode == 403 {
+		case 403:
 			type_ = ForbiddenError
 			message = fmt.Sprintf("%s: %s", message, errorMessage)
-		} else {
+		default:
 			type_ = GenericError
 			message = fmt.Sprintf("%d: %s: %s", statusCode, message, errorMessage)
 		}
@@ -462,7 +463,7 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 			}
 			return defaultValue, nil
 		}
-		return nil, errors.New(fmt.Sprintf("%s may not be null", path))
+		return nil, fmt.Errorf("%s may not be null", path)
 	}
 	if expectedJsonType.Kind() != gottenType.Kind() {
 		if gottenType.Kind() == reflect.Float64 && integralType(expectedJsonType) {
@@ -472,9 +473,9 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 			if err != nil {
 				return nil, fmt.Errorf("%s is failed parse map to string %s", path, err.Error())
 			}
-			v = fmt.Sprintf("%s", string(jsonString))
+			v = string(jsonString)
 		} else {
-			return nil, errors.New(fmt.Sprintf("type mismatch (%s != %s) for %s", stringizeType(gottenType), stringizeType(expectedJsonType), path))
+			return nil, fmt.Errorf("type mismatch (%s != %s) for %s", stringizeType(gottenType), stringizeType(expectedJsonType), path)
 		}
 	}
 	switch expectedType.Kind() {
@@ -494,7 +495,7 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 			sv := v.(string)
 			if sv == "" {
 				if !optional {
-					return nil, errors.New(fmt.Sprintf("%s may not be empty", path))
+					return nil, fmt.Errorf("%s may not be empty", path)
 				} else {
 					v = defaultValue
 				}
@@ -505,14 +506,14 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 					if err != nil {
 						_v, err = time.Parse(TDAPIDateTimeNumericZone, sv)
 						if err != nil {
-							return nil, errors.New(fmt.Sprintf("invalid time string %s for %s", sv, path))
+							return nil, fmt.Errorf("invalid time string %s for %s", sv, path)
 						}
 					}
 				}
 				v = _v.UTC()
 			}
 		} else {
-			return nil, errors.New(fmt.Sprintf("unsupported type %s in the schema for %s", expectedType.String(), path))
+			return nil, fmt.Errorf("unsupported type %s in the schema for %s", expectedType.String(), path)
 		}
 	case reflect.Slice:
 		_path := make([]byte, len(path), len(path)+16)
@@ -547,9 +548,9 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 		}
 		h := len(_path)
 		_v := v.(map[string]interface{})
-		for k, _ := range _v {
+		for k := range _v {
 			if !ev.MapIndex(reflect.ValueOf(k)).IsValid() {
-				return nil, errors.New(fmt.Sprintf("unknown key %s under %s", k, path))
+				return nil, fmt.Errorf("unknown key %s under %s", k, path)
 			}
 		}
 		rv := reflect.MakeMap(expectedType)
@@ -566,7 +567,7 @@ func (client *TDClient) validateAndCoerceInner(path string, v interface{}, ev re
 				if evt == optionalType {
 					ve = eve.Interface().(Optional).Default
 				} else {
-					return nil, errors.New(fmt.Sprintf("missing key %s under %s", k, path))
+					return nil, fmt.Errorf("missing key %s under %s", k, path)
 				}
 			}
 			_path = _path[0:h]
