@@ -1,7 +1,9 @@
 Treasure Data API client for Go
 ===============================
 
-[![Build Status](https://travis-ci.org/treasure-data/td-client-go.svg?branch=master)](https://travis-ci.org/treasure-data/td-client-go)
+[![Go Reference](https://pkg.go.dev/badge/github.com/treasure-data/td-client-go.svg)](https://pkg.go.dev/github.com/treasure-data/td-client-go)
+[![Build Status](https://github.com/treasure-data/td-client-go/actions/workflows/golang.yml/badge.svg)](https://github.com/treasure-data/td-client-go/actions/workflows/golang.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/treasure-data/td-client-go)](https://goreportcard.com/report/github.com/treasure-data/td-client-go)
 
 Build
 -----
