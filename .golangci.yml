@@ -1,3 +1,4 @@
+---
 version: "2"
 
 linters:
@@ -5,3 +6,5 @@ linters:
     - errcheck
     - staticcheck
     - unused
+
+# see: https://golangci-lint.run/usage/configuration/
