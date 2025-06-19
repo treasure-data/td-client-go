@@ -57,7 +57,7 @@ type ListUsersResult []ListUsersResultElement
 
 var listUsersSchema = map[string]interface{}{
 	"users": []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"id":            0,
 			"first_name":    Optional{"", ""},
 			"last_name":     Optional{"", ""},

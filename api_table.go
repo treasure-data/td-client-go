@@ -75,7 +75,7 @@ type ListTablesResult []ListTablesResultElement
 var listTablesSchema = map[string]interface{}{
 	"database": "",
 	"tables": []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"id":                     0,
 			"user_id":                0,
 			"description":            Optional{"", nil},
