@@ -96,8 +96,7 @@ func TestRunSchedule(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed create client: %s", err.Error())
 	}
-	var runTime string
-	runTime = time.Now().String()
+	var runTime string = time.Now().String()
 	runResultList, err := client.RunSchedule(TestScheduleName, runTime, nil)
 	if err != nil {
 		t.Fatalf("bad request: %s", err.Error())
