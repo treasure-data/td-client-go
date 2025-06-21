@@ -73,7 +73,7 @@ func (client *TDClient) Import(db string, table string, format string, blob Blob
 			if err != nil {
 				return 0., err
 			}
-			if bytes.Compare(md5Sum, expectedMD5Sum) != 0 {
+			if !bytes.Equal(md5Sum, expectedMD5Sum) {
 				return 0., errors.New("Checksum mismatch")
 			}
 		}

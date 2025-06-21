@@ -44,7 +44,7 @@ type ListDataBasesResult []ListDataBasesResultElement
 
 var listDatabasesSchema = map[string]interface{}{
 	"databases": []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"id":               "",
 			"user_id":          0,
 			"description":      Optional{"", nil},
