@@ -20,7 +20,6 @@ package td_client
 
 import (
 	"testing"
-	"time"
 )
 
 func TestListJobs(t *testing.T) {
