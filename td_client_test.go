@@ -64,7 +64,7 @@ func TestCheckSchemaSuccess(t *testing.T) {
 						"",
 					},
 					"h": []map[string]string{
-						map[string]string{
+						{
 							"i": "",
 						},
 					},
