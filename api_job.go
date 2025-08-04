@@ -172,14 +172,6 @@ var submitJobSchema = map[string]interface{}{
 	"database": "",
 }
 
-var submitPartialDeleteJobSchema = map[string]interface{}{
-	"job_id":   int64(0),
-	"database": "",
-	"table":    "",
-	"from":     0,
-	"to":       0,
-}
-
 type ListJobsOptions struct {
 	from   string
 	to     string
@@ -422,27 +414,4 @@ func (client *TDClient) SubmitExportJob(db string, table string, storageType str
 		return "", err
 	}
 	return js["job_id"].(string), nil
-}
-
-func (client *TDClient) SubmitPartialDeleteJob(db string, table string, to time.Time, from time.Time, options map[string]string) (string, error) {
-	params := dictToValues(options)
-	if !to.IsZero() {
-		params.Set("to", to.UTC().Format(TDAPIDateTime))
-	}
-	if !from.IsZero() {
-		params.Set("from", from.UTC().Format(TDAPIDateTime))
-	}
-	resp, err := client.post(fmt.Sprintf("/v3/table/partialdelete/%s/%s", url.QueryEscape(db), url.QueryEscape(table)), params)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		return "", client.buildError(resp, -1, "Partial delete failed", nil)
-	}
-	js, err := client.checkedJson(resp, submitPartialDeleteJobSchema)
-	if err != nil {
-		return "", err
-	}
-	return strconv.FormatInt(js["job_id"].(int64), 10), nil
 }

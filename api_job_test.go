@@ -218,28 +218,3 @@ func TestKillJob(t *testing.T) {
 		t.Fatalf("bad request: %s", killJobErr.Error())
 	}
 }
-
-func TestSubmitPartialDeleteJob(t *testing.T) {
-	client, err := NewTDClient(Settings{
-		Transport: &DummyTransport{[]byte(`{"job_id":9999999999,"database":"sample_datasets","table":"www_access","from":1403499600,"to":1403503200}`)},
-	})
-	if err != nil {
-		t.Fatalf("failed create client: %s", err.Error())
-	}
-	var dbName string
-	var tableName string
-	var from time.Time
-	var to time.Time
-	var options map[string]string
-	dbName = "sample_datasets"
-	tableName = "www_access"
-	options = map[string]string{}
-	partialDeleteJobID, err := client.SubmitPartialDeleteJob(dbName, tableName, from, to, options)
-	if err != nil {
-		t.Fatalf("bad request: %s", err.Error())
-	}
-	if partialDeleteJobID != "9999999999" {
-		t.Fatalf("want job ID 9999999999, got %s", partialDeleteJobID)
-	}
-	t.Logf("Partial Delete Job ID is %s", partialDeleteJobID)
-}
