@@ -27,9 +27,6 @@ import (
 // ListDataBasesResultElement represents an item of the result of
 // ListDatabases API call
 type ListDataBasesResultElement struct {
-	Id              string
-	UserId          int
-	Description     string
 	Name            string
 	Organization    string
 	Count           int
@@ -44,10 +41,7 @@ type ListDataBasesResult []ListDataBasesResultElement
 
 var listDatabasesSchema = map[string]interface{}{
 	"databases": []map[string]interface{}{
-		{
-			"id":               "",
-			"user_id":          0,
-			"description":      Optional{"", nil},
+		map[string]interface{}{
 			"name":             "",
 			"organization":     Optional{"", ""},
 			"count":            0,
@@ -91,9 +85,6 @@ func (client *TDClient) ListDatabases() (*ListDataBasesResult, error) {
 	retval := make(ListDataBasesResult, len(databases))
 	for i, v := range databases {
 		retval[i] = ListDataBasesResultElement{
-			Id:              v["id"].(string),
-			UserId:          v["user_id"].(int),
-			Description:     v["description"].(string),
 			Name:            v["name"].(string),
 			Organization:    v["organization"].(string),
 			Count:           v["count"].(int),

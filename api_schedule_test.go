@@ -31,7 +31,7 @@ const TestTableName = "test_table"
 
 func TestListSchedules(t *testing.T) {
 	client, err := NewTDClient(Settings{
-		Transport: &DummyTransport{[]byte(`{"schedules":[{"id": 999999999, "executing_user_id": 1, "description": "blah", "name":"test_query","cron":null,"timezone":"UTC","delay":0,"created_at":"2017-03-27T09:39:42Z","type":"presto","query":"SELECT * FROM test_table","database":"test","user_name":"Test User","priority":0,"retry_limit":0,"result":"","next_time":null}]}`)},
+		Transport: &DummyTransport{[]byte(`{"schedules":[{"name":"test_query","cron":null,"timezone":"UTC","delay":0,"created_at":"2017-03-27T09:39:42Z","type":"presto","query":"SELECT * FROM test_table","database":"test","user_name":"Test User","priority":0,"retry_limit":0,"result":"","next_time":null}]}`)},
 	})
 	if err != nil {
 		t.Fatalf("failed create client: %s", err.Error())
@@ -96,7 +96,8 @@ func TestRunSchedule(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed create client: %s", err.Error())
 	}
-	var runTime string = time.Now().String()
+	var runTime string
+	runTime = time.Now().String()
 	runResultList, err := client.RunSchedule(TestScheduleName, runTime, nil)
 	if err != nil {
 		t.Fatalf("bad request: %s", err.Error())

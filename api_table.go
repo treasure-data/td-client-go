@@ -32,8 +32,6 @@ import (
 // call
 type ListTablesResultElement struct {
 	Id                   int
-	UserId               int
-	Description          string
 	Name                 string
 	Type                 string
 	Count                int
@@ -51,8 +49,6 @@ type ListTablesResultElement struct {
 
 var showTableSchema = map[string]interface{}{
 	"id":                     0,
-	"user_id":                0,
-	"description":            Optional{"", nil},
 	"name":                   "",
 	"type":                   Optional{"", "?"},
 	"count":                  Optional{0, 0},
@@ -77,8 +73,6 @@ var listTablesSchema = map[string]interface{}{
 	"tables": []map[string]interface{}{
 		{
 			"id":                     0,
-			"user_id":                0,
-			"description":            Optional{"", nil},
 			"name":                   "",
 			"type":                   Optional{"", "?"},
 			"count":                  Optional{0, 0},
@@ -118,8 +112,6 @@ func (client *TDClient) ShowTable(db, table string) (*ListTablesResultElement, e
 	}
 	return &ListTablesResultElement{
 		Id:                   js["id"].(int),
-		UserId:               js["user_id"].(int),
-		Description:          js["description"].(string),
 		Name:                 js["name"].(string),
 		Type:                 js["type"].(string),
 		Count:                js["count"].(int),
@@ -154,8 +146,6 @@ func (client *TDClient) ListTables(db string) (*ListTablesResult, error) {
 	for i, v := range tables {
 		retval[i] = ListTablesResultElement{
 			Id:                   v["id"].(int),
-			UserId:               v["user_id"].(int),
-			Description:          v["description"].(string),
 			Name:                 v["name"].(string),
 			Type:                 v["type"].(string),
 			Count:                v["count"].(int),

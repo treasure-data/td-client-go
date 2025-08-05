@@ -75,9 +75,6 @@ const listDatabasesResponse = `
 {
    "databases":[
       {
-         "id": "1",
-         "user_id": 1,
-         "description": "desc 1",
          "name":"test",
          "created_at":"2016-11-07 09:37:37 UTC",
          "updated_at":"2016-11-07 09:37:37 UTC",
@@ -87,8 +84,6 @@ const listDatabasesResponse = `
          "delete_protected": true
       },
       {
-         "id": "2",
-         "user_id": 1,
          "name":"sample_datasets",
          "created_at":"2014-10-04 01:13:11 UTC",
          "updated_at":"2016-04-21 06:31:45 UTC",
@@ -98,9 +93,6 @@ const listDatabasesResponse = `
          "delete_protected": false
       },
       {
-         "id": "3",
-         "user_id": 1,
-         "description": "desc 3",
          "name":"information_schema",
          "created_at":"2016-12-15 05:24:21 UTC",
          "updated_at":"2016-12-15 05:24:21 UTC",
