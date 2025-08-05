@@ -1,6 +1,10 @@
 Version History
 ===============
 
+v0.4.0
+------
+* Remove partial_delete api. (#59)
+
 v0.3.0
 ------
 * Remove v3 core utilization api. (#43)
