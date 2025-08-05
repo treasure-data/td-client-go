@@ -1,5 +1,4 @@
-//go:build ignore
-// +build ignore
+// +build
 
 package td_client
 
