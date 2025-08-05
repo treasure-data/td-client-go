@@ -49,7 +49,6 @@ Job/Query API:
 	KillJob
 	SubmitQuery
 	SubmitExportJob
-	SubmitPartialDeleteJob
 	JobStatus
 	JobResult
 	ListResults
