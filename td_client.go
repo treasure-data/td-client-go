@@ -161,7 +161,7 @@ type TDClient struct {
 	apiKey            string
 	userAgent         string
 	router            EndpointRouter
-	ssl               bool
+	ssl               bool // nolint:unused
 	rootCAs           *x509.CertPool
 	port              int
 	connectionTimeout time.Duration
@@ -625,7 +625,7 @@ func (client *TDClient) getMessagePackDecoder(reader io.Reader) *codec.Decoder {
 	return codec.NewDecoder(reader, client.mpCodec)
 }
 
-func (client *TDClient) getMessagePackEncoder(writer io.Writer) *codec.Encoder {
+func (client *TDClient) getMessagePackEncoder(writer io.Writer) *codec.Encoder { // nolint:unused
 	return codec.NewEncoder(writer, client.mpCodec)
 }
 
