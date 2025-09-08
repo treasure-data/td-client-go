@@ -203,7 +203,7 @@ func main() {
 			errHandler( err )
 		}
 	} else {
-		fmt.Println("Created datatbase:", conf.DbName)
+		fmt.Println("Created database:", conf.DbName)
 	}
 
 	//
@@ -255,7 +255,7 @@ func main() {
 	if ticks, err := client.Import( conf.DbName, conf.TableName, "msgpack.gz", payload, "" ); err != nil {
 		errHandler( err, client, "table", "database" )
 	} else {
-		fmt.Println("elapsed time:%g", ticks)
+		fmt.Printf("elapsed time:%g\n", ticks)
 	}
 
 	//
