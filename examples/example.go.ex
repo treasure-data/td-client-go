@@ -85,7 +85,7 @@ func waitForJob( client *td_client.TDClient, jobId string ) {
 				}
 				break
 			}
-			time.Sleep(1000000000)
+			time.Sleep(time.Second)
 		}
 	}
 
@@ -94,7 +94,7 @@ func waitForJob( client *td_client.TDClient, jobId string ) {
 	//
 
 	for {
-		time.Sleep(1000000000)
+		time.Sleep(time.Second)
 		if status, err := client.JobStatus( jobId ); err != nil {
 			errHandler( err, client, "bulk", "table", "database" )
 		} else {
