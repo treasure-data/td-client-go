@@ -1,4 +1,4 @@
-// +build
+// go:build exclude
 
 package td_client
 
