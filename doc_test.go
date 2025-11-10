@@ -1,5 +1,3 @@
-// +build
-
 package td_client
 
 import (
