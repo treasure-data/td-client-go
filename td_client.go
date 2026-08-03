@@ -27,7 +27,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -195,7 +194,7 @@ var optionalType = reflect.TypeOf(Optional{})
 type InMemoryBlob []byte
 
 func (b InMemoryBlob) Reader() (io.ReadCloser, error) {
-	return ioutil.NopCloser(bytes.NewReader(b)), nil
+	return io.NopCloser(bytes.NewReader(b)), nil
 }
 
 func (b InMemoryBlob) Size() (int64, error) {
@@ -333,7 +332,7 @@ func (client *TDClient) put(requestUri string, stream Blob) (*http.Response, err
 func (client *TDClient) buildError(resp *http.Response, type_ int, message string, cause error) error {
 	statusCode := resp.StatusCode
 	errorMessage := ""
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -593,7 +592,7 @@ func (client *TDClient) validateAndCoerce(js map[string]interface{}, schema map[
 }
 
 func (client *TDClient) checkedJson(resp *http.Response, schema map[string]interface{}) (map[string]interface{}, error) {
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, &APIError{
 			Type:    GenericError,

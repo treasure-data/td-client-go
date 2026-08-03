@@ -20,7 +20,7 @@ package td_client
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"testing"
@@ -169,7 +169,7 @@ func (t *DummyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		Status: "200 OK", StatusCode: 200,
 		Proto: "HTTP/1.1", ProtoMajor: 1, ProtoMinor: 1,
 		Header:           http.Header{"Content-Type": {"application/json"}},
-		Body:             ioutil.NopCloser(bytes.NewReader(t.ResponseBytes)),
+		Body:             io.NopCloser(bytes.NewReader(t.ResponseBytes)),
 		ContentLength:    int64(len(t.ResponseBytes)),
 		TransferEncoding: nil,
 	}, nil
