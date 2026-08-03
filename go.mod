@@ -1,5 +1,5 @@
 module github.com/treasure-data/td-client-go
 
-go 1.15
+go 1.23
 
 require github.com/ugorji/go/codec v1.1.7
